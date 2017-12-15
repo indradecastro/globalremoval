@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+<<<<<<< HEAD
 knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
 ```
 
@@ -39,6 +40,19 @@ t(t(data.frame("num.NAs"=apply(raw[-labels], 2, function(x){round((nrow(raw)-len
 hist(raw$initial_dung, main="Weight of initial dung (grams)", xlab="grams of wet dung", ylab="number of samples", breaks=seq(min(raw$initial_dung)-1, max(raw$initial_dung)+1, 0.5)); box()
 
 table(cut(raw$initial_dung, breaks=c(280,299.9,300,320), labels=c("lower", "300gr.", "bigger")))
+=======
+```
+
+## Import data
+```{r}
+raw <- read.table("data/removal.csv", header=T, sep=";", na.strings=c("-", "N/A"))
+```
+
+```{r}
+labels <- 1:4
+apply(raw[labels], 2, unique)
+summary(raw[-labels])
+>>>>>>> 6076a37c12138ea9fe6bab3577cc5f527a218bc7
 ```
 Most of the samples (`r round(length(which(raw$initial_dung==300.0)) / nrow(raw), 2)`%) weigh exactly 300.0 grams.  
 However, there are `r length(which(raw$initial_dung>300.0))` samples (`r round(length(which(raw$initial_dung>300.0)) / nrow(raw), 2)`%) over that weight.
