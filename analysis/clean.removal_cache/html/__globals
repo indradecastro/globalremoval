@@ -1,0 +1,8 @@
+unnamed-chunk-1	apply	complete.cases	data.frame	labels	length	nrow	raw	round	t	which
+unnamed-chunk-2	apply	raw	summary	unique
+unnamed-chunk-3	$	box	c	cut	hist	max	min	raw	seq	table
+import	c	read.table	T
+labels	apply	raw	unique
+data	labels	raw	summary
+initialdung	$	box	c	cut	hist	max	min	raw	seq	table
+exploredata	labels	raw	summary

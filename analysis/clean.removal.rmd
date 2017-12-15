@@ -6,25 +6,41 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+## Import data
+```{r import, echo=T}
+raw <- read.table("data/removal.csv", header=T, sep=";", na.strings=c("-", "N/A"))
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+## Check for table consistency
+i.e. Number of Sites, number of treatments, number of experimental units...
+```{r labels}
+labels <- 1:4
+apply(raw[labels], 2, unique)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Explore data
+i.e. ranges of data make sense, no evident outliers, number of NA values...
+```{r exploredata}
+summary(raw[-labels])
+```
+
+Summarize percentage of NAs in each variable:
+```{r}
+t(t(data.frame("num.NAs"=apply(raw[-labels], 2, function(x){round((nrow(raw)-length(which(complete.cases(x)))) / nrow(raw) *100, 2)}))))
+```
+
+### Initial dung
+```{r initialdung}
+hist(raw$initial_dung, main="Weight of initial dung (grams)", xlab="grams of wet dung", ylab="number of samples", breaks=seq(min(raw$initial_dung)-1, max(raw$initial_dung)+1, 0.5)); box()
+
+table(cut(raw$initial_dung, breaks=c(280,299.9,300,320), labels=c("lower", "300gr.", "bigger")))
+```
+Most of the samples (`r round(length(which(raw$initial_dung==300.0)) / nrow(raw), 2)`%) weigh exactly 300.0 grams.  
+However, there are `r length(which(raw$initial_dung>300.0))` samples (`r round(length(which(raw$initial_dung>300.0)) / nrow(raw), 2)`%) over that weight.
+
+
