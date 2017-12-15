@@ -1,0 +1,211 @@
+codigo_parcela;continente;bioregion;bioma;pais;localidad;manejo;Lat;Long;Altitude_(masl);Date;cow_density_(No/ha);T_media_anual_(Cº);T_media_mes_(Cº); Precip_media_anual_(mm); Precip_media_mes_(mm);Hum_media__anual_(%);Hum_media__mes_(%);Pres_seasonality;Temp_seasonality;Ecosystem;Ecosys_surround;Grass_spp;Soil_type;land_history_(years);cattle_breed;anthelmintic
+ARG01Int;SouthAmerica;Neotropical;;Argentina;La_querencia_1;1;27°44'55,08''S;59°11'18,52''W;?;11/16/2016;2.1;20.99;21.8;2211.9;238.9;76.31;73.2;spring-summer;?;?;pajonal;Elyonorus-Cynodon;arcilloso;50;braford-brangus;Yes/four_year
+ARG01Ext;SouthAmerica;Neotropical;;Argentina;La_querencia_2;2;27°43'55,08''S;59°14'23,39''W;?;11/16/2016;0.68;20.99;21.8;2211.9;238.9;76.31;73.2;spring-summer;?;?;pastizal;Spartina-Paspalum-Desmodium-Cyperus;arcilloso;50;braford-brangus;?
+AUS01Int;Australia;Australian;;Australia;Wombeyan_1;1;?;?;?;2/13/2017;56;11;18;810;60;55-74;52-75;?;?;?;pasture/eucalypt_forest;?;?;161;?;Yes
+AUS01Ext;Australia;Australian;;Australia;Wombeyan_2;2;?;?;?;2/13/2017;0;11;18;810;60;55-74;52-75;?;?;?;pasture/eucalypt_forest;?;?;161;?;?
+AUS02Int;Australia;Australian;;Australia;Kirby_1138km;1;30°26'04.1''S;151°36'53.5''E;?;12/6/2016;26;13.1;18.3;755.4;87.6;49;58.5;summer-rainfall;?;?;open_eucalypt;native-spp;granite;50;angus;No
+AUS02Ext;Australia;Australian;;Australia;Kirby_1147km;2;30°26'16.2"S;151°37'34.1"E;?;12/6/2016;2;13.1;18.3;755.4;87.6;49;58.5;summer-rainfall;?;?;open_eucalypt;native-spp;granite;50;angus;No
+BEL01Int;Europe;Paleartic;;Belgium;Hazegrasstraat;1;51°19'27.7''N;3°20'6.2''E;?;8/14/2016;8;10.1;18;722;79.3;?;?;atlantic_climat_no_dry_season;?;?;polder;Lolium_perenne-Holcus_lanatus;clay;centuries;belgian_blue;yearly_winter
+BEL01Ext;Europe;Paleartic;;Belgium;Zwin_(Kleyne_vlakte);2;51°21'21"N;3°20'41"E;?;8/14/2016;0.5;10.1;18;722;79.3;?;?;atlantic_climat_no_dry_season;?;?;dune_grassland;Holcus-Alopecurus-Cynosurus-Agrostis-Lolium;sand-clay;15;highland_cattle;yearly_winter
+BRA01Int;SouthAmerica;Neotropical;;Brazil;Campus_Samambaia_1;1;16°35'41.42"S;49°17'10.31"O;?;1/27/2016;8.9;?;?;?;?;?;?;?;?;?;Semi_deciduos_forest/pasture/urban;Panicum-Mombaca-Tanzania;?;12;Holand-Jersey;Yes/four_year
+BRA01Ext;SouthAmerica;Neotropical;;Brazil;Campus_Samambaia_2;2; 16°36'10.61"S;49°16'16.23"O;?;1/27/2016;2;?;?;?;?;?;?;?;?;?;Semi_deciduos_forest/pasture/urban;Panicum-Mombaca-Tanzania;?;12;Holand-Jersey;Yes/four_year
+BRA02Int;SouthAmerica;Neotropical;;Brazil;Nova_Veneza_1;1; 16°19'35.44"S;49°21'10.37"O;?;1/28/2016;5.8;?;?;?;?;?;?;?;?;?;Semi_deciduos_forest/pasture/urban;Panicum-Mombaca-Brachiara;?;20;Girolando;No
+BRA02Ext;SouthAmerica;Neotropical;;Brazil;Nova_Veneza_2;2;16°19'45.14"S;49°21'40.34"O;?;1/28/2016;2.75;?;?;?;?;?;?;?;?;?;Semi_deciduos_forest/pasture/urban;Panicum-Mombaca-Brachiara;?;20;Girolando;No
+BRA03Int;SouthAmerica;Neotropical;;Brazil;Jaguaruna_1;1;28°37'36.2"S;49°02'21.5"W;?;2/1/2017;10;19.8;24.1;1398;163;74;81;rainfall;?;?;litoral;Digitaria-Brachiaria;cambisols;20;jersey-dutch;Yes/10_years/twice_year
+BRA03Ext;SouthAmerica;Neotropical;;Brazil;Jaguaruna_2;2;28º36'S;48º58'W;?;2/1/2017;13;19.8;24.1;1398;163;74;81;rainfall;?;?;litoral;Urochloa;cambisols;32;jersey-dutch;Yes/10_years/twice_year
+CAN01Int;NorthAmerica;Neartic;;Canada;Purple_springs_1;1;49818274;-111902660;?;6/14/2016;25;6.4;15.7;381;91;61;66;rainy;?;?;dry_mixed_grassland;wheat_grass;sandy;60;black_angus;Yes/twice_year
+CAN01Ext;NorthAmerica;Neartic;;Canada;Purple_springs_2;2;49841557;-111855306;?;6/14/2016;2.14;6.4;15.7;381;91;61;66;rainy;?;?;dry_mixed_grassland;wheat_grass;sandy;60;black_angus-charolais;Yes/one_year
+CHI01Int;SouthAmerica;Neotropical;;Chile;Maquehue_1;1;38°50'11.53''S;72°41'46.15''S;80;9/20/2016;?;12;9;1350;112.5;50;80;rainy;?;pradera_natural;native_forest;Dactylis-Holcus-Trifolium_Loliun;andisol;centuries;holstein;Yes/one_year
+CHI01Ext;SouthAmerica;Neotropical;;Chile;Maquehue_2;2;38°51'31,73''S;72°41'57,42'';78;9/20/2016;?;12;9;1350;112.5;50;80;rainy;?;pradera_natural;native_forest;Dactylis-Holcus-Trifolium_Loliun;andisol;centuries;overo_colorado;Yes/one_year
+COL01Int;SouthAmerica;Neotropical;;Colombia;El_cerindo_1;1;01°39'54.1''N;75°14'16.4''W;318;9/22/2016;5.5;26;29;3540;3330;82;87;rainy;?;anthropic_grassland;agricultural_crops;Brachiaria y otros;arcilloso;31;holstein-gyr-jersey-girolando;Yes/four_year
+COL01Ext;SouthAmerica;Neotropical;;Colombia;El_cerindo_2;2;01°40'15.8''N;75°14'21.8''W;311;9/22/2016;3;26;29;3540;3330;82;87;rainy;?;anthropic_grassland;agricultural_crops;Brachiaria y otros;arcilloso;31;holstein-gyr-jersey-girolando;Yes/four_year
+COL02Int;SouthAmerica;Neotropical;;Colombia;Subachoque_1;1;4º54'19”N;74º13'30''W;?;?;32;13.3;13.3;865;44;82;80;rainy;?;anthropic_grassland;mountain_forest;Kikuyo;inceptisoles;25;holstein;Yes/twice_year
+COL02Ext;SouthAmerica;Neotropical;;Colombia;Subachoque_2;2;4º54'16”N;74º12'02''W;?;?;3;13.1;13;865;40;82;80;rainy;?;anthropic_grassland;mountain_forest;Kikuyo;inceptisoles;40;holstein;Yes/twice_year
+COL03Int;SouthAmerica;Neotropical;;Colombia;Lucho;1;10°21’21,71”N;74°59’34,14”O ;?;2/3/2017;4.2;28.4;28.5;1035;79;88;88.8;transicion_rainy_dry;?;BsT;grassland-crops;Poaceae;arcilloso;19;Bos-primigenius-taurus;Yes/four_year
+COL03Ext;SouthAmerica;Neotropical;;Colombia;Lismar;2;10°21’13,61”N;74°59’40,93”O ;?;2/3/2017;1.5;28.4;28.5;1035;79;88;88.8;transicion_rainy_dry;?;BsT;grassland-crops-BsT;Poaceae;arcilloso;6;Bos-primigenius-taurus;Yes/four_year
+ECU01Int;SouthAmerica;Neotropical;;Ecuador;Mashpi_1;1;00°10'53.95"N;78°54'53.85"O;?;11/23/2016;4;25;21;2200;1600;80;71;transicion_dry-rainy;?;?;mountain_forest;Pasto_amargo;arcilloso-arenoso;40;holstein-jersey;Yes/once_year
+ECU01Ext;SouthAmerica;Neotropical;;Ecuador;Mashpi_2;2;00°11'33.83"N;78°55'16.88"O;?;11/23/2016;0.5;25;21;2200;1600;80;71;transicion_dry-rainy;?;?;mountain_forest;Pasto_amargo;arcilloso-arenoso;50;holstein-jersey;Yes/once_year
+ECU02Int;SouthAmerica;Neotropical;;Ecuador;Estacion_UPTL_1;1;-4.085591;-79.205942;?;12/9/2016;17;16.8;17.2;911;76;77;76;transicion_dry-rainy;?;?;mountain_forest;Pennisetum-Kukuyo;arcilloso;25;holstein;Yes/four_year
+ECU02Ext;SouthAmerica;Neotropical;;Ecuador;Estacion_UPTL_2;2;-4.093393;-79.199614;?;12/9/2016;8;16.8;17.2;911;76;77;76;transicion_dry-rainy;?;?;mountain_forest;Pennisetum-Kukuyo;arenoso;25;holstein;Yes/four_year
+ENG01Int;Europe;Paleartic;;England;Arnisde_tower_farm;1;?;?;?;8/12/2016;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;No
+ENG01Ext;Europe;Paleartic;;England;Heald_brow_silverdale;2;?;?;?;8/12/2016;?;?;?;?;?;?;?;?;?;?;?;?;?;?;?;No
+FRA01Int;Europe;Paleartic;;France;Mas-thibert_1;1;43°30'41.81"N;4°49'01.53"E;?;?;5;15.7;?;604.4;?;?;?;Mediterranean_weather;?;?;grassland;Herbaceas y juncos;clay_loam;33;spanish_fighting_bull;yes
+FRA01Ext;Europe;Paleartic;;France;Mas-thibert_2;2;43°30'41.81"N;4°49'01.53" E;?;?;1.4;15.7;?;604.4;?;?;?;Mediterranean_weather;?;?;grassland;Hordeum-Atriplex-Paspalum-Juncus-Polypogon;loam_sandy;33;spanish_fighting_bull;no
+GER01Int;Europe;Paleartic;;Germany;Bezirkslehrgut;1;49°55'40''N;11°32'52''E;?;6/1/2016;10;7.9;16.1;720;75;78;85;summer-rainfall;?;?;forest-pastures;Arrhenatherum-Poa-Festuca-Alopecurus;gleysol-sandstone;50;fleckvieh;Yes/twice_year
+GER01Ext;Europe;Paleartic;;Germany;LBV_lindenhof;2;49°55'03''N;11°35'52''E;?;6/1/2016;2;7.9;16.1;720;75;78;85;summer-rainfall;?;?;forest-pastures;Arrhenatherum-Poa-Festuca-Alopecurus;gleysol-sandstone;20;fleckvieh;?
+HUN01Int;Europe;Paleartic;;Hungary;Zamoly;1;47.33750;18.43147;?;9/12/2016;3.2;11.4;17;539.2;64.6;72.7;70.5;Autum_after_rain;?;?;forests-grasslands;Agrostis-Cynodon-Dactylis-Elymus-Festuca-Lolium-Achillea;calcic_chernozem;35;hungarian_grey_cattle;Yes/once_year
+HUN01Ext;Europe;Paleartic;;Hungary;Csakvar;2;47.35554;18.45549;?;9/12/2016;1.25;11.4;17;539.2;64.6;72.7;70.5;Autum_after_rain;?;?;forests-grasslands;Agrostis-Cynodon-Dactylis-Elymus-Festuca-Lolium-Achillea;calcic_chernozem;47;hungarian_grey_cattle;Yes/once_year
+IND01Int;Asia;Oriental;;India;Hessaraghatta;1;13.157817;77.484575;?;8/1/2016;75-90;23.5;24;900;120;65;71;Monsoon (rainy);?;?;grassland;?;clay;?;holstein-pullikulam-alambadi;?
+IND01Ext;Asia;Oriental;;India;Nrithyagrama;2;13.163994;77.462571;?;8/1/2016;?;23.5;24;900;120;65;71;Monsoon (rainy);?;?;grassland;?;loam;?;holstein-jersey;?
+ITA01Int;Europe;Paleartic;;Italy;Pianezza;1;E32T0389082;UTM 4997639;279;6/13/2016;70;13.88;21.16;78.57;3.51;79;78;?;?;?;agropastoral;Poaceae;loamy;50;diary_cattle_half_breed;No
+ITA01Ext;Europe;Paleartic;;Italy;Venaria;2;E32T0392032;UTM5000168;281;6/13/2016;25;12.68;20.25;111.45;3.33;79;78;?;?;?;agropastoral;Poaceae;loamy;25;diary_cattle_half_breed;No
+MEX01Int;NorthAmerica;Neartic;;Mexico;lagos_de_Moreno_1;1;21°16'30.72"N;102° 7'7.82"W;?;8/25/2016;30;17.6;18.5;606.2;127.5;60;70;?;?;?;xeric_scrubland;wild_grass;planosol_eutric;40;holstein;Yes/twice_year
+MEX01Ext;NorthAmerica;Neartic;;Mexico;lagos_de_Moreno_2;2;21°16'45.79"N;102° 8'14.83"W;?;8/25/2016;100;17.6;18.5;606.2;127.5;60;70;?;?;?;xeric_scrubland;wild_grass;planosol_eutric;50;charolais;Yes/twice_year
+MEX02Int;NorthAmerica;Neartic;;Mexico;Alto_lucero_1;1;14Q763159;2189114;?;10/3/2016;60;26;31.7;858.5;67.9;93;?;transicion_rainy_dry;?;?;tropical_rain_forest;Cynodon;feozems;40;suizo_americano;Yes/twice_year
+MEX02Ext;NorthAmerica;Neartic;;Mexico;Alto_lucero_2;2;14Q765721;2188790;?;10/3/2016;9;26;31.7;858.5;67.9;93;?;transicion_rainy_dry;?;?;tropical_rain_forest;Cynodon;feozems;20;suizo_americano;No
+MEX03Int;NorthAmerica;Neartic;;Mexico;Rancho_moreno_1;1;14Q0757006;2124752;?;8/26/2016;4;29;21.8;11.1;109.9;54;78;rainy;?;?;pastures;Cynodon-Panicum_Hyparrhenia;molisols-vertisols;45;suizo_americano;No
+MEX03Ext;NorthAmerica;Neartic;;Mexico;Rancho_molina_2;2;14Q 758451;2122362;?;8/26/2016;1;29;21.8;11.1;109.9;54;78;rainy;?;?;secondary_dry_forest;Panicum;molisols-vertisols;10;suizo_americano-Cebu;No
+MEX04Int;NorthAmerica;Neartic;;Mexico;Cueva_pinta;1;14Q0763190;2127085;?;8/26/2016;4;29;21.8;11.1;109.9;54;78;rainy;?;?;pastures-crops;Panicum;molisols-vertisols;30;suizo_americano;Yes/twice_year
+MEX04Ext;NorthAmerica;Neartic;;Mexico;Rancho_leobardo;2;14Q0763991;2130122;?;8/26/2016;1;29;21.8;11.1;109.9;54;78;rainy;?;?;pastures-crops;Cynodon-Panicum_Hyparrhenia;molisols-vertisols;9;suizo_americano;No
+MEX05Int;NorthAmerica;Neartic;;Mexico;Tlacuilolan;1;14Q705218;2145756;?;8/31/2016;4;18;20.6;1500;199;85;79;rainy;?;?;pasture-forest;Cynodon;andosol;40;holstein;Yes/twice_year
+MEX05Ext;NorthAmerica;Neartic;;Mexico;Coconal;2;14Q709221;2147631;?;8/31/2016;1;18;20.6;1500;199;85;79;rainy;?;?;pastures-crops;Cynodon;andosol;10;holstein;Yes/twice_year
+MEX06Int;NorthAmerica;Neartic;;Mexico;Cocoxatla;1;14Q707305;2146403;?;8/31/2016;7;18;17.5;1500;241;85;91;rainy;?;?;pasture-pine_forest;Cynodon;andosol;50;holstein;Yes/twice_year
+MEX06Ext;NorthAmerica;Neartic;;Mexico;Micoxtla;2;14Q708238;2151233;?;8/31/2016;1;18;17.5;1500;241;85;91;rainy;?;?;pasture-forest;Cynodon;andosol;15;holstein;No
+POR01Int;Europe;Paleartic;;Portugal;Lezeiras_1;1;38º49'29.43''N;8°50'56.90"O;25;5/16/2016;8;?;?;?;?;?;?;summer;?;?;grassland-crops-dehesa;?;clay;10;portuguesa_cruzados;Yes/four_year
+POR01Ext;Europe;Paleartic;;Portugal;Lezeiras_2;2;38°51'5.41"N;8°50'40.61"O;25;5/16/2016;2.5;?;?;?;?;?;?;summer;?;?;grassland-crops-dehesa;?;clay;10;portuguesa_cruzados;Yes/four_year
+SAL01Int;NorthAmerica;Neotropical;;Salvador;Cara_sucia_1;1;13.7850028;-90.0418055556;?;7/28/2016;9;26.8;26.7;1580;228;77;74;rainy;?;?;pasture-crops;Cynodon;latosol_arcilloso;16;brahman-brown_swiss-holstein-gyr;Yes/twice_year
+SAL01Ext;NorthAmerica;Neotropical;;Salvador;Cara_sucia_2;2;13.7692222;-90.0571111111;?;7/28/2016;2;26.8;26.7;1580;228;77;74;rainy;?;?;pasture-crops;Cynodon;latosol_arcilloso;16;brahman-brown_swiss-holstein-gyr;Yes/twice_year
+SOU01Int;Africa;Afrotropical;;SouthAfrica;Pretoria_1;1;25º44'38.40''S;28º33'26.88''E;1475;11/2/2016;5.8;?;?;?;?;?;?;rainy;?;?;grassland-crops;?;sandy;30;Bos-taurus_Ayshire;Yes/four_year
+SOU01Ext;Africa;Afrotropical;;SouthAfrica;Pretoria_2;2;25º47'06.27''S;28º32'36.37''E;1495;11/2/2016;2.5;?;?;?;?;?;?;rainy;?;?;grassland-crops;?;sandy;20;Bos-taurus_Bonsmara;Yes/four_year
+SPA01Int;Europe;Paleartic;;Spain;Los_molinos_convento;1;40°42’25.20”N;4°05’23.79”O;1030;6/13/2016;5;?;?;?;?;?;?;summer;?;?;grassland;?;?;10;?;Yes/four_year
+SPA01Ext;Europe;Paleartic;;Spain;Los_molinos_privada;2;40°43’11.12”N;4°05’38.92”O;1126;6/13/2016;2;?;?;?;?;?;?;summer;?;?;grassland;?;?;15;?;Yes/twice_year
+SPA01Int;Europe;Paleartic;;Spain;Tres_cantos_privada;1;40°38’36.16”N;3°42’56.85”O;752;5/16/2016;8;?;?;?;?;?;?;summer;?;?;grassland;?;?;10;?;Yes/four_year
+SPA01Ext;Europe;Paleartic;;Spain;Tres_cantos_abierta;2;40°39’13.67”N;3°42’57.31”O;755;5/16/2016;2;?;?;?;?;?;?;summer;?;?;grassland;?;?;8;?;Yes/twice_year
+TUR01Int;Asia;Paleartic;;Turkey;Bolucek;1;39º26'32.06"N;29º57'24.85"E;930;5/12/2016;320;10.8;14.6;46.4;55.2;65.8;62.6;spring-summer;?;?;meadow;Echinochloa-Setaria-Saccharum-Poa-Dactylis;sandy-slime;long_time;montofon-holstein-water_buffalo;No
+TUR01Ext;Asia;Paleartic;;Turkey;Yenibosna;2;39º27'46.37"N;30º01'34.37"E;918;5/12/2016;40;10.8;14.6;46.4;55.2;65.8;62.6;spring-summer;?;?;meadow;Echinochloa-Setaria-Saccharum-Poa-Dactylis;clay_grains;long_time;montofon-holstein-water_buffalo;No
+USA01Int;NorthAmerica;Neartic;;USA;Mac_pettit;1; 41.8401°;-84.0234°;?;6/5/2016;7.1;8.8;19.5;926;99.1;73;68.5;rainy;?;?;pastures;Bromus-Dactylis-Festuca;loamy_sands;70;black_angus-hereford;Yes/once_year
+USA01Ext;NorthAmerica;Neartic;;USA;Carpenter;2; 41.8743°;-84.0102°;?;6/5/2016;2.3;8.8;19.5;926;99.1;73;68.5;rainy;?;?;pastures;Lolium-Festuca-native;loamy_sands;25;black_angus-hereford;Yes/once_year
+VEN01Int;SouthAmerica;Neotropical;;Venezuela;La_estrella;1;10°30'30.9"N;71°57'35.9"W;?;7/18/2016;?;29.1;30;560;40;70;67;transicion_rainy_dry;?;?;xerofitic_forest;Bermuda-estrella-cuba22;haplic_acrisols;30;holstein-carora-swiss;Yes/four_year
+VEN01Ext;SouthAmerica;Neotropical;;Venezuela;Los_compadres;2;10°31'22.7"N;71°49'15.8"W;?;7/19/2016;?;29.1;30;560;40;70;67;transicion_rainy_dry;?;?;xerofitic_forest;Bermuda-estrella-cuba23;haplic_acrisols;?;holstein-carora-jersey;Yes/four_year
+WAL01Int;Europe;Paleartic;;Wales;Pointz_castle;1;SM 84242 23418;;?;9/14/2016;250;11.4;15.6;48.4;0.9;85;87;?;?;?;pasture-crops;Lolium;acid_loamy;7;fresian;Yes/four_year
+WAL01Ext;Europe;Paleartic;;Wales;Southwood;2;SM 85757 21620;;?;9/14/2016;17;11.4;15.6;48.4;0.9;85;87;?;?;?;pasture-crops;mixed grasses;acid_loamy;10;welsh_black;Yes/once_year
+WAL02Int;Europe;Paleartic;;Wales;Upper_harglodd;1;SM 77611 26465;;?;9/5/2016;45;11.4;15.6;48.4;0.9;85;87;?;?;?;pasture-crops;Lolium;acid_loamy;15;simmental;Yes/once_year
+WAL02Ext;Europe;Paleartic;;Wales;Penweathers;2;SM 75456 25855;;?;9/5/2016;8;11.4;15.6;48.4;0.9;85;87;?;?;?;pasture-crops;mixed grasses;loamy-mixture;12;welsh_black;Yes/once_year
+WAL03Int;Europe;Paleartic;;Wales;Penlan;1;SM 74836 25664;;?;9/7/2016;45;11.4;15.6;48.4;0.9;85;87;?;?;?;pasture-crops;Lolium-Rumex;acid_loamy;12;fresian;Yes/four_year
+WAL03Ext;Europe;Paleartic;;Wales;Lower_harglodd;2;SM 77674 26070;;?;9/7/2016;16;11.4;15.6;48.4;0.9;85;87;?;?;?;pasture-crops;Molinia-mixed_grasses;acid_loamy-clay;10;welsh_black;Yes/twice_year
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+Pais/No.Localidad/Tratamiento:;;;;Argentina/Localidad 1/Intensivo;;;;;;;;;;;;;;;;;;;;;;
+Codigo_parcela:;AR01Int;;;;;;;;;;;;;;;;;;;;;;;;;
+;AR01Ext;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+Lat;Decimales;;;;;;;;;;;;;;;;;;;;;;;;;
+Long;Decimales;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+Bioregiones:;Neartica;;Neotropical;Paleartica;Afrotropical;Oriental;Australasia;;;;;;;;;;;;;;;;;;;
