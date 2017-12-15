@@ -1,5 +1,5 @@
 ---
-title: "Clean Removal data"
+title: "Clean 'Removal' data"
 author: "indra deCastro"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
@@ -7,7 +7,6 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
-<<<<<<< HEAD
 knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
 ```
 
@@ -17,10 +16,18 @@ raw <- read.table("data/removal.csv", header=T, sep=";", na.strings=c("-", "N/A"
 ```
 
 ## Check for table consistency
-i.e. Number of Sites, number of treatments, number of experimental units...
+i.e. Number of Sites, number of treatments, number of experimental units...  
+Number of sites: `r length(unique(raw$codigo_parcela))`
 ```{r labels}
 labels <- 1:4
-apply(raw[labels], 2, unique)
+apply(raw[labels], 2, table)
+```
+Why are treatments called "1/2" instead of "Int/Ext"??  
+I suggest that anything that is NOT a number (=continous variables) should be given a name (with letters).  
+
+```{r renametreatments, echo=T}
+raw$manejo <- factor(raw$manejo, labels=c("Int", "Ext"))
+table(raw$manejo)
 ```
 
 
@@ -39,22 +46,55 @@ t(t(data.frame("num.NAs"=apply(raw[-labels], 2, function(x){round((nrow(raw)-len
 ```{r initialdung}
 hist(raw$initial_dung, main="Weight of initial dung (grams)", xlab="grams of wet dung", ylab="number of samples", breaks=seq(min(raw$initial_dung)-1, max(raw$initial_dung)+1, 0.5)); box()
 
-table(cut(raw$initial_dung, breaks=c(280,299.9,300,320), labels=c("lower", "300gr.", "bigger")))
-=======
+table(cut(raw$initial_dung, breaks=c(280,299.9,300,320), labels=c("smaller", "300gr.", "bigger")))
 ```
 
-## Import data
-```{r}
-raw <- read.table("data/removal.csv", header=T, sep=";", na.strings=c("-", "N/A"))
-```
-
-```{r}
-labels <- 1:4
-apply(raw[labels], 2, unique)
-summary(raw[-labels])
->>>>>>> 6076a37c12138ea9fe6bab3577cc5f527a218bc7
-```
 Most of the samples (`r round(length(which(raw$initial_dung==300.0)) / nrow(raw), 2)`%) weigh exactly 300.0 grams.  
 However, there are `r length(which(raw$initial_dung>300.0))` samples (`r round(length(which(raw$initial_dung>300.0)) / nrow(raw), 2)`%) over that weight.
+
+### All other variables
+```{r othervars}
+summary(raw[-labels])
+
+## put histograms on the diagonal
+panel.hist <- function(x, ...)
+{
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(usr[1:2], 0, 1.5) )
+    h <- hist(x, plot = FALSE)
+    breaks <- h$breaks; nB <- length(breaks)
+    y <- h$counts; y <- y/max(y)
+    rect(breaks[-nB], 0, breaks[-1], y, col = "cyan", ...)
+}
+pairs(raw[-labels], bg = "grey80", diag.panel = panel.hist, cex.labels = 1)
+# pairs(raw[-labels])
+```
+
+The variable "dry_paper_bag"  
+`r raw[which(raw$dry_paper_bag>20),"dry_paper_bag"]`  
+
+and "cont_dung_dry" have a problem:  
+`r raw[which(raw$cont_dung_dry>200),"cont_dung_dry"]`  
+
+Most probably it is due to dragging the initial value (25.89 and 207.13) in Excel to complete the other values.
+
+
+```{r testdrypaper}
+raw$newdrypaper <- raw$dry_paper_bag
+raw$newdrypaper[raw$newdrypaper>25.89] <- 25.89
+
+raw$newcontdung <- raw$cont_dung_dry
+raw$newcontdung[raw$newcontdung>207.13] <- 207.13
+
+pairs(raw[-labels], bg = "grey80", diag.panel = panel.hist, cex.labels = 1)
+pairs(raw[c("initial_dung", "final_dung_wet", "final_dung_wet", "newcontdung", "paper_bag", "newdrypaper")], bg = "grey80", diag.panel = panel.hist, cex.labels = 1)
+```
+
+Is this observation right?  
+```{r}
+t(raw[which(raw$final_dung_wet==max(raw$final_dung_wet, na.rm=T)),])
+```
+Dung increased 33 grams!!  
+There was no removal, but addition of dung!  
 
 

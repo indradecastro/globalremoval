@@ -1,8 +1,11 @@
 unnamed-chunk-1	apply	complete.cases	data.frame	labels	length	nrow	raw	round	t	which
-unnamed-chunk-2	apply	raw	summary	unique
-unnamed-chunk-3	$	box	c	cut	hist	max	min	raw	seq	table
+unnamed-chunk-2	==	$	max	raw	t	T	which
+unnamed-chunk-3	apply	raw	summary	unique
 import	c	read.table	T
-labels	apply	raw	unique
+labels	apply	raw	table
 data	labels	raw	summary
 initialdung	$	box	c	cut	hist	max	min	raw	seq	table
 exploredata	labels	raw	summary
+renametreatments	$	$<-	c	factor	table
+othervars	$	c	hist	labels	length	max	on.exit	pairs	par	raw	rect	summary
+testdrypaper	>	[<-	$	$<-	c	labels	pairs	panel.hist
