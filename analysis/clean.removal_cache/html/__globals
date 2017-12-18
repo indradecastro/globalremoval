@@ -1,6 +1,6 @@
 unnamed-chunk-1	apply	complete.cases	data.frame	labels	length	nrow	raw	round	t	which
-unnamed-chunk-2	==	$	max	raw	t	T	which
-unnamed-chunk-3	apply	raw	summary	unique
+unnamed-chunk-2	==	[<-	$	max	plot	summary	T	which
+unnamed-chunk-3	c	grep	names
 import	c	read.table	T
 labels	apply	raw	table
 data	labels	raw	summary
@@ -8,4 +8,10 @@ initialdung	$	box	c	cut	hist	max	min	raw	seq	table
 exploredata	labels	raw	summary
 renametreatments	$	$<-	c	factor	table
 othervars	$	c	hist	labels	length	max	on.exit	pairs	par	raw	rect	summary
-testdrypaper	>	[<-	$	$<-	c	labels	pairs	panel.hist
+testdrypaper	>	[<-	$	$<-	c	pairs	panel.hist
+dungaddition	>	$	abline	as.factor	c	plot	raw	which
+removalhist	c	dungdif	hist
+outliers	==	$	as.factor	c	max	plot	raw	t	T	which
+realremoval	~	==	.	$	$<-	abline	arrange	axis	box	c	codigo_parcela	cut	ddply	F	final_dung_wet	initial_dung	library	manejo	max	mean	min	names<-	plot	prop	raw	reshape	round	strtrim	summarize	T	text	unidad
+unnamed-chunk-4	$	box	hist	max	min	raw	seq	T
+unnamed-chunk-5	

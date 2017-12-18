@@ -1,6 +1,6 @@
 unnamed-chunk-1	
-unnamed-chunk-2	
-unnamed-chunk-3	labels
+unnamed-chunk-2	raw
+unnamed-chunk-3	raw
 import	raw
 labels	labels
 data	
@@ -9,3 +9,9 @@ exploredata
 renametreatments	raw
 othervars	panel.hist
 testdrypaper	raw
+dungaddition	dungdif
+removalhist	
+outliers	
+realremoval	acc	comp.loss	H2O.loss	weightloss	.Random.seed
+unnamed-chunk-4	
+unnamed-chunk-5	

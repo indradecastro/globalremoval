@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
 knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
 knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
 ```
@@ -16,7 +17,7 @@ raw <- read.table("data/removal.csv", header=T, sep=";", na.strings=c("-", "N/A"
 ```
 
 ## Check for table consistency
-i.e. Number of Sites, number of treatments, number of experimental units...  
+i.e. check for: Number of Sites? number of treatments? number of experimental units?...  
 Number of sites: `r length(unique(raw$codigo_parcela))`
 ```{r labels}
 labels <- 1:4
@@ -32,7 +33,7 @@ table(raw$manejo)
 
 
 ## Explore data
-i.e. ranges of data make sense, no evident outliers, number of NA values...
+i.e. check for: ranges of data make sense? no evident outliers? number of NA values?...
 ```{r exploredata}
 summary(raw[-labels])
 ```
@@ -42,17 +43,7 @@ Summarize percentage of NAs in each variable:
 t(t(data.frame("num.NAs"=apply(raw[-labels], 2, function(x){round((nrow(raw)-length(which(complete.cases(x)))) / nrow(raw) *100, 2)}))))
 ```
 
-### Initial dung
-```{r initialdung}
-hist(raw$initial_dung, main="Weight of initial dung (grams)", xlab="grams of wet dung", ylab="number of samples", breaks=seq(min(raw$initial_dung)-1, max(raw$initial_dung)+1, 0.5)); box()
-
-table(cut(raw$initial_dung, breaks=c(280,299.9,300,320), labels=c("smaller", "300gr.", "bigger")))
-```
-
-Most of the samples (`r round(length(which(raw$initial_dung==300.0)) / nrow(raw), 2)`%) weigh exactly 300.0 grams.  
-However, there are `r length(which(raw$initial_dung>300.0))` samples (`r round(length(which(raw$initial_dung>300.0)) / nrow(raw), 2)`%) over that weight.
-
-### All other variables
+### All variables
 ```{r othervars}
 summary(raw[-labels])
 
@@ -66,18 +57,36 @@ panel.hist <- function(x, ...)
     y <- h$counts; y <- y/max(y)
     rect(breaks[-nB], 0, breaks[-1], y, col = "cyan", ...)
 }
-pairs(raw[-labels], bg = "grey80", diag.panel = panel.hist, cex.labels = 1)
+pairs(raw[-labels], bg = "grey80", diag.panel = panel.hist, cex.labels = 1, upper.panel=NULL)
 # pairs(raw[-labels])
 ```
 
+### dung_final_dry
+There is an obvious outlier in data point in *dung_final_dry*:  
+```{r outliers}
+plot(raw$final_dung_dry, pch=c(1,19)[as.factor(raw$final_dung_dry==max(raw$final_dung_dry, na.rm=T))], col=c("black", "red")[as.factor(raw$final_dung_dry==max(raw$final_dung_dry, na.rm=T))], cex=c(1,2)[as.factor(raw$final_dung_dry==max(raw$final_dung_dry, na.rm=T))])
+
+t(raw[which(raw$final_dung_dry==max(raw$final_dung_dry, na.rm=T)),])
+```
+Is is a typo when digitalizing data?  
+Look at the values in the replicates of this experiment:  
+```{r}
+plot(raw[raw$codigo_parcela=="AUS02Int","final_dung_dry"])
+summary(raw[raw$codigo_parcela=="AUS02Int","final_dung_dry"])
+
+# correct 
+raw[which(raw$final_dung_dry==max(raw$final_dung_dry, na.rm=T)), "final_dung_dry"] <- 161
+```
+Should the first "1" be deleted? Thus, the correct value be 161.0?  
+I have corrected it for future exploration, but NOT in the original data table.  
+
+### Dry variables
+Moreover,  
 The variable "dry_paper_bag"  
 `r raw[which(raw$dry_paper_bag>20),"dry_paper_bag"]`  
-
 and "cont_dung_dry" have a problem:  
 `r raw[which(raw$cont_dung_dry>200),"cont_dung_dry"]`  
-
 Most probably it is due to dragging the initial value (25.89 and 207.13) in Excel to complete the other values.
-
 
 ```{r testdrypaper}
 raw$newdrypaper <- raw$dry_paper_bag
@@ -86,15 +95,76 @@ raw$newdrypaper[raw$newdrypaper>25.89] <- 25.89
 raw$newcontdung <- raw$cont_dung_dry
 raw$newcontdung[raw$newcontdung>207.13] <- 207.13
 
-pairs(raw[-labels], bg = "grey80", diag.panel = panel.hist, cex.labels = 1)
-pairs(raw[c("initial_dung", "final_dung_wet", "final_dung_wet", "newcontdung", "paper_bag", "newdrypaper")], bg = "grey80", diag.panel = panel.hist, cex.labels = 1)
+pairs(raw[c("initial_dung", "final_dung_wet", "final_dung_dry", "newcontdung", "paper_bag", "newdrypaper")], bg = "grey80", diag.panel = panel.hist, cex.labels = 1, upper.panel=NULL)
 ```
 
-Is this observation right?  
+### Variables of interest
 ```{r}
-t(raw[which(raw$final_dung_wet==max(raw$final_dung_wet, na.rm=T)),])
+raw <- raw[-grep(x=names(raw), pattern=c("dry|bag"))]
 ```
-Dung increased 33 grams!!  
-There was no removal, but addition of dung!  
+
+### Initial dung
+```{r initialdung}
+hist(raw$initial_dung, main="Weight of initial dung (grams)", xlab="grams of wet dung", ylab="number of samples", breaks=seq(min(raw$initial_dung)-1, max(raw$initial_dung)+1, 0.5)); box()
+
+table(cut(raw$initial_dung, breaks=c(280,299.9,300,320), labels=c("smaller", "300gr", "bigger")))
+```
+
+Most of the samples (`r round(length(which(raw$initial_dung==300.0)) / nrow(raw), 2)`%) weigh exactly 300.0 grams.  
+However, there are `r length(which(raw$initial_dung>300.0))` samples (`r round(length(which(raw$initial_dung>300.0)) / nrow(raw), 2)`%) over that weight.
+
+### Final dung (wet)
+```{r}
+hist(raw$final_dung_wet, main="Weight of final dung (grams)", xlab="grams of wet dung", ylab="number of samples", breaks=seq(min(raw$final_dung_wet, na.rm=T)-1, max(raw$final_dung_wet, na.rm=T)+1, 2)); box()
+
+# table(cut(raw$final_dung_wet, breaks=c(0,299.9,300,320), labels=c("smaller", "300gr", "bigger")))
+```
+
+### Removal: Compute and explore
+The complete removal formula is:  
+*Removal rate = (ExpIniWet - (ExpFinWet + WaterLoss)) / 48h*  
+Where *WaterLoss* is calculated as *ConIniWet - ConFinWet*  using the control experiments.  
+
+### Water loss (evaporation in control experiments)
+```{r realremoval}
+library(plyr)
+weightloss <- ddply(raw, .(codigo_parcela, unidad, manejo), .fun=summarize, 
+      "H2O.loss" = mean(initial_dung - final_dung_wet, na.rm=T))
+H2O.loss <- weightloss[weightloss$unidad=="Cont",]
+H2O.loss$ID <- strtrim(H2O.loss$codigo_parcela, width=5)
+comp.loss <- reshape(H2O.loss, v.names="H2O.loss", idvar="ID", timevar="manejo", direction="wide", drop="codigo_parcela")
+names(comp.loss) <- c("unidad", "ID", "Ext", "Int")
+comp.loss <- comp.loss[c("ID", "unidad", "Ext", "Int")]
+comp.loss$prop <- round(100*(comp.loss$Ext / comp.loss$Int) - 100, 2)
+
+arrange(comp.loss, prop)
+# plot(Ext ~ Int, data=comp.loss, xlim=c(0,180), ylim=c(0,180), xlab="water loss Controles Extensivo", ylab="water loss Controles Intensivo"); abline(a=0, b=1); text(comp.loss$Int, comp.loss$Ext, labels=comp.loss$ID, pos=4)
+acc <- 20
+plot(comp.loss$prop, axes=F, xlab="", ylab="water loss gain percentage (%)", pch=19, col=c("red", "black", "red")[cut(comp.loss$prop, breaks=c(min(comp.loss$prop), -acc, acc, max(comp.loss$prop)), include.lowest=T)], ylim=c(-100,400))
+axis(2); box(); abline(h=0); text(comp.loss$prop, labels=comp.loss$ID, pos=3); abline(h=acc, lty=2); abline(h=-acc, lty=2)
+```
+Note that the water loss is VERY different from Intensive to Extensive treatments.  
+**Is this reasonable??**
+
+
+
+### Removal rate
+Are these observations of simple dung difference correct?  
+```{r dungaddition}
+dungdif <- raw$final_dung_wet - raw$initial_dung
+plot(dungdif, pch=c(1,19)[as.factor(dungdif>0)], col=c("black", "red")[as.factor(dungdif>0)]); abline(h=0)
+raw[which(dungdif>0),1:6]
+```
+Dung increased during experiment, there was **NO** removal, but addition of dung!  
+
+Moreover, the distribution of removal is not typical nor easy to analyze.  
+I attempt to describe it as:  
+*left-tailed or left-skewed normal distribution with zero inflation*
+```{r removalhist}
+head(merge(raw, H2O.loss[,c("codigo_parcela", "H2O.loss")]), 30)
+# hist(dungdif/300*100, 100, xlim=c(-100,20), main="Percentage (%) of dung removed", xlab="% removed")
+
+
+```
 
 
