@@ -100,7 +100,7 @@ pairs(raw[c("initial_dung", "final_dung_wet", "final_dung_dry", "newcontdung", "
 
 ### Variables of interest
 ```{r}
-raw <- raw[-grep(x=names(raw), pattern=c("dry|bag"))]
+raw <- raw[-grep(x=names(raw), pattern=c("dry|bag|new"))]
 ```
 
 ### Initial dung
@@ -139,32 +139,42 @@ comp.loss$prop <- round(100*(comp.loss$Ext / comp.loss$Int) - 100, 2)
 
 arrange(comp.loss, prop)
 # plot(Ext ~ Int, data=comp.loss, xlim=c(0,180), ylim=c(0,180), xlab="water loss Controles Extensivo", ylab="water loss Controles Intensivo"); abline(a=0, b=1); text(comp.loss$Int, comp.loss$Ext, labels=comp.loss$ID, pos=4)
-acc <- 20
+acc <- 50
 plot(comp.loss$prop, axes=F, xlab="", ylab="water loss gain percentage (%)", pch=19, col=c("red", "black", "red")[cut(comp.loss$prop, breaks=c(min(comp.loss$prop), -acc, acc, max(comp.loss$prop)), include.lowest=T)], ylim=c(-100,400))
 axis(2); box(); abline(h=0); text(comp.loss$prop, labels=comp.loss$ID, pos=3); abline(h=acc, lty=2); abline(h=-acc, lty=2)
 ```
 Note that the water loss is VERY different from Intensive to Extensive treatments.  
-**Is this reasonable??**
+**Is this reasonable??**  
+Are there important habitat differences between Intensive and Extensive treatments?  
+**Where Control experiments really beetle-free??**
 
 
 
 ### Removal rate
 Are these observations of simple dung difference correct?  
 ```{r dungaddition}
-dungdif <- raw$final_dung_wet - raw$initial_dung
+xp <- raw[raw$unidad!="Cont",]
+dungdif <- xp$final_dung_wet - xp$initial_dung
 plot(dungdif, pch=c(1,19)[as.factor(dungdif>0)], col=c("black", "red")[as.factor(dungdif>0)]); abline(h=0)
-raw[which(dungdif>0),1:6]
+xp[which(dungdif>0),1:6]
+library(ggplot2)
+qplot(dungdif, geom = "histogram", fill = dungdif < 0, binwidth=4, xlab="weight diff (water not considered)")
 ```
 Dung increased during experiment, there was **NO** removal, but addition of dung!  
+Percentage of experiments with weight increase: `r round(100*nrow(xp[which(dungdif>0),])/nrow(xp),2)`%  
 
-Moreover, the distribution of removal is not typical nor easy to analyze.  
-I attempt to describe it as:  
-*left-tailed or left-skewed normal distribution with zero inflation*
-```{r removalhist}
-head(merge(raw, H2O.loss[,c("codigo_parcela", "H2O.loss")]), 30)
-# hist(dungdif/300*100, 100, xlim=c(-100,20), main="Percentage (%) of dung removed", xlab="% removed")
+**This percentage is even higher if we consider water loss:**
+```{r removalhist, echo=T}
+xp <- merge(xp, H2O.loss[,c("codigo_parcela", "H2O.loss")])
+xp <- xp[,c("codigo_parcela", "manejo", "unidad", "no_unidad", "initial_dung", "final_dung_wet", "H2O.loss")]
+head(xp)
+xp$rem48 <- (xp$initial_dung - (xp$final_dung_wet + xp$H2O.loss))/48
 
-
+qplot(rem48, data=xp, geom = "histogram", fill = rem48 > 0, binwidth=0.1, xlab="Removal rate in 48h (gr/h)")
 ```
+Percentage of experiments with weight increase: `r round(100*nrow(xp[which(xp$rem48<0),])/nrow(xp),2)`%  
 
+```{r}
+xp[which(xp$rem48<0),]
+```
 

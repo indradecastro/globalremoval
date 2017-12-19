@@ -9,9 +9,9 @@ exploredata	labels	raw	summary
 renametreatments	$	$<-	c	factor	table
 othervars	$	c	hist	labels	length	max	on.exit	pairs	par	raw	rect	summary
 testdrypaper	>	[<-	$	$<-	c	pairs	panel.hist
-dungaddition	>	$	abline	as.factor	c	plot	raw	which
-removalhist	c	dungdif	hist
+dungaddition	<	>	!=	$	abline	as.factor	c	library	plot	qplot	raw	which
+removalhist	>	$	$<-	c	H2O.loss	head	merge	qplot	rem48
 outliers	==	$	as.factor	c	max	plot	raw	t	T	which
-realremoval	~	==	.	$	$<-	abline	arrange	axis	box	c	codigo_parcela	cut	ddply	F	final_dung_wet	initial_dung	library	manejo	max	mean	min	names<-	plot	prop	raw	reshape	round	strtrim	summarize	T	text	unidad
+realremoval	==	.	$	$<-	abline	arrange	axis	box	c	codigo_parcela	cut	ddply	F	final_dung_wet	initial_dung	library	manejo	max	mean	min	names<-	plot	prop	raw	reshape	round	strtrim	summarize	T	text	unidad
 unnamed-chunk-4	$	box	hist	max	min	raw	seq	T
 unnamed-chunk-5	

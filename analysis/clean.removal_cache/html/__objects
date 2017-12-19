@@ -9,8 +9,8 @@ exploredata
 renametreatments	raw
 othervars	panel.hist
 testdrypaper	raw
-dungaddition	dungdif
-removalhist	
+dungaddition	dungdif	xp
+removalhist	xp
 outliers	
 realremoval	acc	comp.loss	H2O.loss	weightloss	.Random.seed
 unnamed-chunk-4	
