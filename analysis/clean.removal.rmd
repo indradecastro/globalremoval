@@ -5,10 +5,19 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
 ---
 
+<style type="text/css">
+.table {
+
+    width: 40%;
+
+}
+</style>
+
 ```{r setup, include=FALSE}
 # setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
 knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
 knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
+options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
 ```
 
 ## Import data
@@ -40,7 +49,7 @@ summary(raw[-labels])
 
 Summarize percentage of NAs in each variable:
 ```{r}
-t(t(data.frame("num.NAs"=apply(raw[-labels], 2, function(x){round((nrow(raw)-length(which(complete.cases(x)))) / nrow(raw) *100, 2)}))))
+t(t(data.frame("perc.NAs"=apply(raw[-labels], 2, function(x){round((nrow(raw)-length(which(complete.cases(x)))) / nrow(raw) *100, 2)}))))
 ```
 
 ### All variables
@@ -128,22 +137,35 @@ Where *WaterLoss* is calculated as *ConIniWet - ConFinWet*  using the control ex
 ### Water loss (evaporation in control experiments)
 ```{r realremoval}
 library(plyr)
-weightloss <- ddply(raw, .(codigo_parcela, unidad, manejo), .fun=summarize, 
-      "H2O.loss" = mean(initial_dung - final_dung_wet, na.rm=T))
-H2O.loss <- weightloss[weightloss$unidad=="Cont",]
-H2O.loss$ID <- strtrim(H2O.loss$codigo_parcela, width=5)
-comp.loss <- reshape(H2O.loss, v.names="H2O.loss", idvar="ID", timevar="manejo", direction="wide", drop="codigo_parcela")
-names(comp.loss) <- c("unidad", "ID", "Ext", "Int")
-comp.loss <- comp.loss[c("ID", "unidad", "Ext", "Int")]
-comp.loss$prop <- round(100*(comp.loss$Ext / comp.loss$Int) - 100, 2)
+waterdif <- ddply(raw, .(codigo_parcela, unidad, manejo, no_unidad), .fun=summarize, 
+                  "waterdif" = initial_dung - final_dung_wet)
 
-arrange(comp.loss, prop)
-# plot(Ext ~ Int, data=comp.loss, xlim=c(0,180), ylim=c(0,180), xlab="water loss Controles Extensivo", ylab="water loss Controles Intensivo"); abline(a=0, b=1); text(comp.loss$Int, comp.loss$Ext, labels=comp.loss$ID, pos=4)
-acc <- 50
-plot(comp.loss$prop, axes=F, xlab="", ylab="water loss gain percentage (%)", pch=19, col=c("red", "black", "red")[cut(comp.loss$prop, breaks=c(min(comp.loss$prop), -acc, acc, max(comp.loss$prop)), include.lowest=T)], ylim=c(-100,400))
-axis(2); box(); abline(h=0); text(comp.loss$prop, labels=comp.loss$ID, pos=3); abline(h=acc, lty=2); abline(h=-acc, lty=2)
+waterdif.cont <- waterdif[waterdif$unidad=="Cont",]
+waterdif.cont$ID <- strtrim(waterdif.cont$codigo_parcela, width=5)
+
+# significance
+water.pval <- ddply(waterdif.cont, .(ID), summarize,
+                    "pval"=wilcox.test(waterdif ~ manejo)$p.value)
+                    
+
+waterdif.cont <- merge(waterdif.cont, water.pval)
+waterdif.cont <- arrange(waterdif.cont, pval)
+waterdif.cont$ID <- factor(waterdif.cont$ID, levels=unique(waterdif.cont$ID))
+
+# plotting
+library(ggplot2)
+library(ggsignif)
+white.violins <- ggplot(waterdif.cont) +
+      aes(x=manejo, y=waterdif) +
+      geom_violin() +
+      facet_wrap(~ID, ncol=4) +
+      labs(x="manejo", y="water loss", title="Evaporation in each treatment") +
+      scale_y_continuous(expand = c(0,0), limits=c(0,300)) +
+      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=TRUE)
+
+white.violins
 ```
-Note that the water loss is VERY different from Intensive to Extensive treatments.  
+Note that the water loss is different (wilcoxon test) between SOME Intensive and Extensive treatments.  
 **Is this reasonable??**  
 Are there important habitat differences between Intensive and Extensive treatments?  
 **Where Control experiments really beetle-free??**
@@ -154,27 +176,43 @@ Are there important habitat differences between Intensive and Extensive treatmen
 Are these observations of simple dung difference correct?  
 ```{r dungaddition}
 xp <- raw[raw$unidad!="Cont",]
-dungdif <- xp$final_dung_wet - xp$initial_dung
-plot(dungdif, pch=c(1,19)[as.factor(dungdif>0)], col=c("black", "red")[as.factor(dungdif>0)]); abline(h=0)
-xp[which(dungdif>0),1:6]
-library(ggplot2)
-qplot(dungdif, geom = "histogram", fill = dungdif < 0, binwidth=4, xlab="weight diff (water not considered)")
+dungdif <- xp$initial_dung - xp$final_dung_wet
+plot(dungdif, pch=c(1,19)[as.factor(dungdif<0)], col=c("black", "red")[as.factor(dungdif<0)]); abline(h=0)
+
+library(DT)
+xp[which(dungdif<0),1:6] %>% 
+      datatable(rownames=F)
+
+qplot(dungdif, geom = "histogram", fill = dungdif > 0, binwidth=4, xlab="weight diff (water not considered)")
 ```
 Dung increased during experiment, there was **NO** removal, but addition of dung!  
-Percentage of experiments with weight increase: `r round(100*nrow(xp[which(dungdif>0),])/nrow(xp),2)`%  
+Percentage of experiments with weight increase: `r round(100*nrow(xp[which(dungdif<0),])/nrow(xp),2)`%  
 
 **This percentage is even higher if we consider water loss:**
-```{r removalhist, echo=T}
+```{r removalhist, echo=F}
+H2O.loss <- ddply(waterdif[waterdif$unidad=="Cont",], .(codigo_parcela, manejo), summarise,
+                  "H2O.loss" = mean(waterdif, na.rm=T))
 xp <- merge(xp, H2O.loss[,c("codigo_parcela", "H2O.loss")])
 xp <- xp[,c("codigo_parcela", "manejo", "unidad", "no_unidad", "initial_dung", "final_dung_wet", "H2O.loss")]
-head(xp)
+
 xp$rem48 <- (xp$initial_dung - (xp$final_dung_wet + xp$H2O.loss))/48
 
 qplot(rem48, data=xp, geom = "histogram", fill = rem48 > 0, binwidth=0.1, xlab="Removal rate in 48h (gr/h)")
 ```
 Percentage of experiments with weight increase: `r round(100*nrow(xp[which(xp$rem48<0),])/nrow(xp),2)`%  
 
+Table **only showing experiments with negative** removal rate (=*increase of weight*)
+```{r, eval=F}
+xp[which(xp$rem48<0),] %>% 
+      datatable(rownames=F) %>% 
+      formatRound(columns=c("H2O.loss", "rem48"), digits=2)
+```
+
 ```{r}
 xp[which(xp$rem48<0),]
+
+xp[which(xp$rem48<0),] %>% 
+      datatable(rownames=F) %>% 
+      formatRound(columns=c("H2O.loss", "rem48"), digits=2)
 ```
 

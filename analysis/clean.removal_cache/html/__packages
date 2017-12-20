@@ -1,3 +1,6 @@
 base
 plyr
 ggplot2
+knitr
+DT
+ggsignif

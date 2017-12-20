@@ -9,9 +9,10 @@ exploredata
 renametreatments	raw
 othervars	panel.hist
 testdrypaper	raw
-dungaddition	dungdif	xp
-removalhist	xp
+dungaddition	dungdif	xp	.clean.removal_cache/html/dungaddition_1dafd5de91cd24365e556ad91f643991_meta
+removalhist	H2O.loss	xp
 outliers	
-realremoval	acc	comp.loss	H2O.loss	weightloss	.Random.seed
+realremoval	waterdif	waterdif.cont	water.pval	white.violins	.Random.seed
 unnamed-chunk-4	
 unnamed-chunk-5	
+unnamed-chunk-6	.clean.removal_cache/html/unnamed-chunk-6_b8cd02de7b099960964db8f9916f3797_meta

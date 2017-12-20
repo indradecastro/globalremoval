@@ -9,9 +9,10 @@ exploredata	labels	raw	summary
 renametreatments	$	$<-	c	factor	table
 othervars	$	c	hist	labels	length	max	on.exit	pairs	par	raw	rect	summary
 testdrypaper	>	[<-	$	$<-	c	pairs	panel.hist
-dungaddition	<	>	!=	$	abline	as.factor	c	library	plot	qplot	raw	which
-removalhist	>	$	$<-	c	H2O.loss	head	merge	qplot	rem48
+dungaddition	<	>	!=	$	%>%	abline	as.factor	c	datatable	F	library	plot	qplot	raw	which
+removalhist	==	>	.	$	$<-	c	codigo_parcela	ddply	manejo	mean	merge	qplot	rem48	summarise	T	waterdif
 outliers	==	$	as.factor	c	max	plot	raw	t	T	which
-realremoval	==	.	$	$<-	abline	arrange	axis	box	c	codigo_parcela	cut	ddply	F	final_dung_wet	initial_dung	library	manejo	max	mean	min	names<-	plot	prop	raw	reshape	round	strtrim	summarize	T	text	unidad
+realremoval	~	==	.	$	$<-	aes	arrange	c	codigo_parcela	ddply	facet_wrap	factor	final_dung_wet	geom_signif	geom_violin	ggplot	ID	initial_dung	labs	library	list	manejo	merge	no_unidad	pval	raw	scale_y_continuous	strtrim	summarize	unidad	unique	wilcox.test
 unnamed-chunk-4	$	box	hist	max	min	raw	seq	T
-unnamed-chunk-5	
+unnamed-chunk-5	<	$	%>%	c	datatable	F	formatRound	which	xp
+unnamed-chunk-6	<	$	%>%	c	datatable	F	formatRound	which	xp
