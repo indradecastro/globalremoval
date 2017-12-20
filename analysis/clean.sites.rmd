@@ -1,0 +1,33 @@
+---
+title: "Clean 'Sites' data"
+author: "indra deCastro"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+---
+
+<style type="text/css">
+.table {
+
+    width: 40%;
+
+}
+</style>
+
+```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
+options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+```
+
+## Import data
+```{r import, echo=T}
+raw <- read.table("data/sites.csv", header=T, sep=";", dec=",", na.strings="?")
+```
+
+## Fix coordinates
+```{r}
+library(measurements)
+gsub(",", ".", gsub("º|\\*|\\*\\*|\\", " ", raw$lat))
+```
+

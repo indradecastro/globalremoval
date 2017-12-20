@@ -179,14 +179,17 @@ xp <- raw[raw$unidad!="Cont",]
 dungdif <- xp$initial_dung - xp$final_dung_wet
 plot(dungdif, pch=c(1,19)[as.factor(dungdif<0)], col=c("black", "red")[as.factor(dungdif<0)]); abline(h=0)
 
-library(DT)
-xp[which(dungdif<0),1:6] %>% 
-      datatable(rownames=F)
-
 qplot(dungdif, geom = "histogram", fill = dungdif > 0, binwidth=4, xlab="weight diff (water not considered)")
 ```
 Dung increased during experiment, there was **NO** removal, but addition of dung!  
 Percentage of experiments with weight increase: `r round(100*nrow(xp[which(dungdif<0),])/nrow(xp),2)`%  
+
+```{r}
+library(DT)
+xp[which(dungdif<0),1:6] %>% 
+      datatable(rownames=F, elementId="five")
+```
+In Canadian experiments the difference might be due to method inaccuracy (soil crumbs not well brushed enough etc.)
 
 **This percentage is even higher if we consider water loss:**
 ```{r removalhist, echo=F}
@@ -202,17 +205,43 @@ qplot(rem48, data=xp, geom = "histogram", fill = rem48 > 0, binwidth=0.1, xlab="
 Percentage of experiments with weight increase: `r round(100*nrow(xp[which(xp$rem48<0),])/nrow(xp),2)`%  
 
 Table **only showing experiments with negative** removal rate (=*increase of weight*)
-```{r, eval=F}
-xp[which(xp$rem48<0),] %>% 
-      datatable(rownames=F) %>% 
-      formatRound(columns=c("H2O.loss", "rem48"), digits=2)
-```
-
 ```{r}
-xp[which(xp$rem48<0),]
-
-xp[which(xp$rem48<0),] %>% 
-      datatable(rownames=F) %>% 
+library(DT)
+xp[which(xp$rem48<0),] %>%
+      datatable(rownames=F, elementId="sixtyone") %>%
       formatRound(columns=c("H2O.loss", "rem48"), digits=2)
 ```
+
+## Removal according to treatment
+```{r}
+xp$ID <- strtrim(xp$codigo_parcela, width=5)
+usexp <- xp[which(xp$rem48>0),]
+
+# significance
+usexp.pval <- ddply(usexp, .(ID), summarize,
+                    "pval"=wilcox.test(rem48 ~ manejo)$p.value)
+                    
+
+usexp <- merge(usexp, usexp.pval)
+usexp <- arrange(usexp, pval)
+usexp$ID <- factor(usexp$ID, levels=unique(usexp$ID))
+
+# plotting
+library(ggplot2)
+library(ggsignif)
+
+white.violins <- usexp %>% 
+      ggplot() +
+      aes(x=manejo, y=rem48) +
+      geom_violin() +
+      # geom_boxplot() + 
+      facet_wrap(~ID, ncol=4) +
+      labs(x="manejo", y="Removal rate 48h (gr/h)", title="Dung Removal in each treatment") +
+      scale_y_continuous(expand = c(0,0), limits=c(0,4)) +
+      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=TRUE, test="wilcox.test")
+
+white.violins
+```
+
+
 
