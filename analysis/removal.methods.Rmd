@@ -1,0 +1,106 @@
+---
+title: "Removal methods"
+author: "indra deCastro"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+      
+<style type="text/css">
+      .table {
+            width: 40%;
+      }
+</style>
+      
+```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
+options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+```
+
+## Import data
+```{r import, echo=T}
+raw <- read.table("data/clean.removal.csv", header=T, sep=";", na.strings=c("-", "N/A", "NA"))
+```
+
+## METHOD 1
+
+- wet.rem48 = (initial_dung_wet - final_dung_wet - evap.rain.orgs) / 48h
+- evap.rain.orgs = initial_dung_wet - final_dung_wet **(using only CONROL units)**
+```{r, echo=T}
+# calculate waterloss
+library(plyr)
+evap.rain.orgs <- ddply(raw, .(site, type, manejo, unit), .fun=summarize, 
+                  "evap.rain.orgs" = initial_dung_wet - final_dung_wet)
+
+# only use loss of weight of control units (=theoretically waterloss)
+evap.rain.orgs.controls <- evap.rain.orgs[evap.rain.orgs$type=="Cont",]
+avg.evap.rain.orgs <- ddply(evap.rain.orgs.controls, .(site, manejo), summarise,
+                  "avg.evap.rain.orgs" = mean(evap.rain.orgs, na.rm=T))
+
+# merge waterloss with dung data
+xp <- merge(raw, avg.evap.rain.orgs)
+
+# calculate wet.rem48
+xp$wet.rem48 <- with(xp, (initial_dung_wet - final_dung_wet - avg.evap.rain.orgs) / 48)
+```
+
+## METHOD 2
+- dry.rem48 = (initial_dung_dry – final_dung_dry) / 48h
+- initial_dung_dry =  initial_dung_wet * (1 – final_water_proportion)
+- final_water_proportion = (final_dung_wet – final_dung_dry) / final_dung_wet  
+
+*assumes that water proportion is the same at the end and beginning of experiment*
+```{r, echo=T}
+# calculate water.proportion
+xp$final.water.prop <- with(xp, (final_dung_wet - final_dung_dry) / final_dung_wet)
+xp$initial_dung_dry <- with(xp, initial_dung_wet * (1 - final.water.prop)) # assumes that water proportion is the same at the end and beginning of experiment
+xp$dry.rem48 <- with(xp, (initial_dung_dry - final_dung_dry) / 48 )
+```
+
+## Export results at experimental-unit level
+```{r}
+write.table(xp, "data/unit.removal.csv", row.names=F, quote=F, sep=";")
+```
+
+
+## Calculate Removal by Dung Beetle and Other Organism
+```{r, echo=T}
+xp$unit <- as.factor(xp$unit)
+rem.site <- ddply(xp, .(site, manejo, type), numcolwise(mean, na.rm=T))
+
+all <- rem.site[rem.site$type=="Exp",]
+org <- rem.site[rem.site$type=="Cont",]
+```
+
+```{r}
+intvars <- c("site", "manejo", "wet.rem48", "dry.rem48")
+all.rem <- merge(all[,intvars], org[,intvars], by=c("site", "manejo"), suffixes=c(".all", ".nonBeetle"))
+names(all.rem)[1] <- "code"
+all.rem$site <- substr(all.rem$code, 1, 5)
+all.rem <- all.rem[,c("code", "site", "manejo", "wet.rem48.all", "wet.rem48.nonBeetle", "dry.rem48.all", "dry.rem48.nonBeetle")]
+
+all.rem$dry.rem48.DungBeetles <- with(all.rem, dry.rem48.all - dry.rem48.nonBeetle)
+```
+
+## METHOD 3
+(combination of METHOD 1 & 2)  
+
+- dry2.rem48 = (initial_dung_wet - final_dung_wet - total_nonbeetle_loss) / 48h
+- total_nonbeetle_loss = initial_dung_wet – final_dung_dry **(using only CONROL units)**
+
+```{r}
+
+```
+
+
+
+
+## Export results at site level
+```{r}
+all.rem$wet.rem48.Evap.Orgs <- round(as.numeric(format(all.rem$wet.rem48.Evap.Orgs, scientific = FALSE)), 4)
+write.table(all.rem, "data/site.removal.csv", row.names=F, quote=F, sep=";")
+```

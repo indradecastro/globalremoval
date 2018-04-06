@@ -1,0 +1,13 @@
+base
+reshape2
+DT
+plyr
+dplyr
+ggplot2
+ggsignif
+MASS
+gld
+mvtnorm
+lattice
+PairedData
+bindrcpp

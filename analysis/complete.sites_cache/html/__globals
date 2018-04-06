@@ -1,0 +1,4 @@
+import	raw	read.table	T	F
+unnamed-chunk-1	library	raster	sp	extract.point.values	site	coords	r	getData	var	as.numeric	plot	points	SpatialPoints	data.frame	t	text	names	paste	values	extract	rm	return	wclim2df	sites	print	as.character	cat	lall	apply	x	cbind	do.call	rbind
+unnamed-chunk-2	coords	as.data.frame	apply	raw	c	as.numeric	cbind	site	names	head	n	nrow
+unnamed-chunk-3	

@@ -1,0 +1,3 @@
+import	raw	read.table	T
+unnamed-chunk-1	foc.names	c	paste0	foc	raw
+unnamed-chunk-2	library	dplyr	reshape2	allcor	as.matrix	cor	foc	allcor.melt	arrange	melt	abs	value	filter	paste0	substr	Var1	Var2

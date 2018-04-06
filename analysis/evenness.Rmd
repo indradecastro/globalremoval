@@ -1,0 +1,143 @@
+---
+title: "Evenness"
+author: "indra deCastro"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+      
+<style type="text/css">
+      .table {
+            width: 100%;
+      }
+</style>
+      
+```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
+options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+```
+
+## Import data
+```{r import, echo=T}
+raw <- read.table("data/traps.csv", header=T, sep=",", check.names=F, na.strings=c("","-"))
+```
+
+```{r}
+etiq.cols <- 1:4
+praw <- raw[,-etiq.cols]
+etiq <- raw[,etiq.cols]
+```
+
+## Evenness by treatment (units = sites)
+```{r}
+# evenness
+library(vegan)
+rich.site <- specnumber(praw, raw$code, MARGIN=1)
+abun.site <- aggregate(praw, by=list(raw$code), sum)
+rownames(abun.site) <- abun.site$Group.1
+abun.site$Group.1 <- NULL
+H.site <- diversity(abun.site, MARGIN=1)
+even.site <- H.site/log(rich.site)
+
+
+even.site <- data.frame("code"=names(even.site),
+                        "site"=substr(names(even.site), 1,5),
+                        "manejo"=substr(names(even.site), 6, 8),
+                        "even"=even.site)
+
+
+# write.table(even.site, "data/evenness.csv", row.names=F, quote=F, sep=";")
+
+library(reshape2)
+even.treat <- dcast(even.site, site ~ manejo)
+library(DT)
+library(plyr)
+library(dplyr)
+datatable(even.treat, rownames=F) %>%
+      formatRound(columns=c("Ext", "Int"), digits=4)
+```
+
+### Comparison of PAIRED data at the site level
+```{r rich.sites}
+even.site <- even.site[even.site$site %in% even.treat[complete.cases(even.treat), "site"],]
+wilcox.test(even ~ manejo, data=even.site, paired=T)
+
+library(ggplot2)
+library(ggsignif)
+
+white.violins <- even.site %>% 
+      ggplot() +
+      aes(x=manejo, y=even) +
+      geom_violin() +
+      # geom_boxplot() + 
+      # facet_wrap(~ID, ncol=6) +
+      labs(x="manejo", y="Community evenness by site", title="PAIRED comparison") +
+      # scale_y_continuous(expand = c(0,0), limits=c(0,7.5)) +
+      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=F, test="wilcox.test", test.args=list(exact=F, paired=T))
+
+white.violins + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+```
+
+### Paired plot
+```{r pairedplot}
+library(PairedData)
+pd <- with(even.treat[,c("Int", "Ext")], paired(Ext, Int))
+plot(pd, type = "profile") + theme_bw() + labs(x="", y="Beetle abundance by site", title="PAIRED comparison")
+```
+
+## Evenness by treatment (units = traps)
+```{r}
+library(vegan)
+rich.trap <- specnumber(praw, MARGIN=1)
+H.trap <- as.vector(sapply(split(praw, raw$code), diversity, MARGIN=1))
+even.trap <- H.trap/log(rich.trap)
+
+# I intentionally do NOT add "trap" as a column because they are not pairable
+even.trap <- data.frame("code" = raw$code,
+                        "site" = substr(raw$code, 1,5),
+                        "manejo" = substr(raw$code, 6, 8),
+                        "even" = even.trap)
+
+# I intentionally do NOT reshape the data in 2 columns (int, ext) because they are not pairable
+# library(reshape2)
+# although normally dcast is used to summarize df, here I use it as reshape to wide format
+# rich.treat.trap <- dcast(rich.trap, site ~ manejo)
+# library(DT)
+# datatable(rich.treat, rownames=F)
+```
+
+### Comparison of UNPAIRED data at the trap level
+```{r, fig.height=20, fig.width=15}
+# NOTE: data is NOT pairable
+even.trap <- na.omit(even.trap[even.trap$even<4,])
+even.trap.pval <- ddply(even.trap, .(site), summarize,
+                    "pval"=wilcox.test(even ~ manejo, exact=F, paired=F)$p.value)
+ord.trap.pvals <- arrange(even.trap.pval, pval)
+
+datatable(ord.trap.pvals)%>%
+      formatRound(columns=c("pval"), digits=4)
+
+even.trap <- arrange(merge(even.trap, even.trap.pval), pval)
+even.trap$site <- factor(even.trap$site, levels=unique(even.trap$site))
+
+# plot
+white.violins <- even.trap %>% 
+      ggplot() +
+      aes(x=manejo, y=even, fill=manejo) +
+      theme(legend.title=element_blank()) +
+      geom_violin() +
+      # geom_boxplot() + 
+      facet_wrap(~site, ncol=6) +
+      labs(x="manejo", y="Community evenness by site", title="UNPAIRED comparison") +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      scale_y_continuous(expand = c(0,0), limits=c(0,4.5)) +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=T, test="wilcox.test", test.args=list(exact=F, paired=F))
+
+white.violins + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+```
+

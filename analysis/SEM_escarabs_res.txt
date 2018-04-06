@@ -1,0 +1,16 @@
+[[1]]							
+	AIC	AICc	K	n			
+dung_1	27.24	29.967	9	76			
+dung_2	25.11	28.495	10	76			
+							
+[[2]]							
+	response	predictor	estimate	std.error	p.value	dung_rem	
+1	rich	abun	0.3603824	0.08574522	0.0001	***	dung_1
+2	rich	PC2	0.2994393	0.09445896	0.0023	**	dung_1
+3	rich	PC1	-0.2754116	0.1094709	0.0143	*	dung_1
+4	rem.met1	rich	0.4294674	0.10498119	0.0001	***	dung_1
+5	rich	abun	0.3603824	0.08574522	0.0001	***	dung_2
+6	rich	PC2	0.2994393	0.09445896	0.0023	**	dung_2
+7	rich	PC1	-0.2754116	0.1094709	0.0143	*	dung_2
+8	rem.met2	abun	0.502163	0.09669451	0	***	dung_2
+9	rem.met2	PC2	0.2622332	0.09669451	0.0083	**	dung_2

@@ -1,0 +1,9 @@
+import	traits	read.table	T
+unnamed-chunk-1	library	plyr	avg	ddply	traits	.	trait	sp	code	summarize	length	value	mean	sd
+unnamed-chunk-2	library	DT	avg	%>%	datatable	F	formatRound	c
+unnamed-chunk-3	
+unnamed-chunk-4	myt	traits	value	trait	library	png	img	readPNG	grid	bug	rasterGrob	ggplot2	white.violins	%>%	ggplot	aes	log10	annotation_custom	geom_violin	geom_dotplot	labs
+unnamed-chunk-5	myt	traits	value	trait	sp	mysp	white.violins	%>%	ggplot	aes	log10	as.factor	geom_violin	F	geom_dotplot	labs	paste
+unnamed-chunk-6	myt	traits	value	trait	sp	mysp	site	mysite	grepl	code	any	T	mymain	paste	white.violins	%>%	ggplot	aes	log10	as.factor	geom_violin	F	geom_dotplot	labs
+unnamed-chunk-7	pt.traits	cbind	traits	trait	c	pt.ratio	ptw	ptl	perc	umbral	quantile	par	plot	sort	abline	hist	arrange	desc	%>%	datatable	list	F	formatRound
+unnamed-chunk-8	sp1	myt	sp	sp2	ss	rbind	droplevels	boxplot	value	head	arrange	desc	cbind	grep	code	F	c	ddply	T	.	trait	summarise	rnorm	quantile	sd

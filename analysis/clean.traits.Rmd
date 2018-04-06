@@ -1,0 +1,183 @@
+---
+title: "Clean 'Traits' data"
+author: "indra deCastro"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
+# options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+```
+
+## Import data
+```{r import, echo=T}
+traits <- read.table("data/traits.csv", header=T, sep=",", na.strings="-")
+traps <- read.table("data/traps.csv", header=T, sep=",")
+```
+
+## Mini summary
+Number of sp in traps: `r length(traps[,-c(1:4)])`  
+Number of sp in traits: `r length(names(table(traits$sp)))`  
+
+## Traits without species
+```{r}
+# names(traps)[270:278]; names(traps)[1:5]
+sptraps <- names(traps[,-c(1:4)])
+sptraits <- names(table(traits$sp))
+setdiff(sptraits, sptraps)
+# traitless <- setdiff(sptraps, sptraits)
+# traitless
+
+sitexsp <- aggregate(traps[-c(1:4)], by=list(traps$site), sum)
+# tlesssites <- sitexsp[,traitless]
+# rownames(tlesssites) <- levels(traps$site)
+# t(tlesssites[apply(tlesssites, 1, sum)!=0,])
+
+# (we have no measurements for 5sp)
+# (or 7sp, counting Bolbelasmus and Trox)
+# sps <- nrow(table(traits$sp))
+# nrow(sps)
+# # names of those 60 species and numb of measures per species
+# sps[order(sps$freq),]
+# table(sps[order(sps$freq),"freq"])
+```
+
+## Species without traits
+```{r}
+setdiff(sptraps, sptraits)
+```
+
+```{r}
+##### very important chunk #####
+# used further down
+library(plyr)
+avg <- ddply(traits, .(trait, sp, code), summarize,
+             "n" = length(value),
+             "avg" = mean(value),
+             "sd" = sd(value))
+```
+
+
+## Species without traits in some sites
+```{r}
+# aggregate(traps[,-c(1:4)], list(traps$code), FUN=function(x){apply(x, 2, sum)})
+etiq.cols <- 1:4
+praw <- traps[,-etiq.cols]
+etiq <- traps[,etiq.cols]
+abun <- aggregate(praw, by=list(traps$code), sum)
+library(reshape)
+labun <- melt(abun)
+labun <- labun[labun$value!=0,]
+names(labun) <- c("code", "sp", "abun")
+
+
+# nrows should match, right??
+uavg <- unique(avg[,c("sp", "code")])
+# head(labun)
+# head(uavg)
+# 
+# dim(uavg)
+# dim(labun)
+
+pabun <- paste(labun$sp,labun$code)
+pavg <- paste(uavg$sp,uavg$code)
+
+arrange(labun[!pabun %in% pavg,], code, sp)
+```
+
+
+## Species and site
+
+- There are many species with 10 measurements. These are singletons (1 individual * 10 measurements).  
+- There are many species (193) with 100 measurements. This should be the max if Noriegas protocol was correctly followed (10 individuals no matter which treatment * 10 measures).  
+
+BUT...  
+...some researchers didn't understand and measured **more** than 10 individuals per species. 
+
+- In these cases, maximum can be 10 individuals in Int and 10 individuals in Ext.  
+Thus, 20 individuals measured 10 traits = 200 measures / per sp / per site.  
+```{r}
+sps <- data.frame(table(traits$sp, substr(traits$code, 1, 5)))
+sps <- sps[sps$Freq!=0,]
+ss <- t(t(table(sps[order(sps$Freq),"Freq"])))
+ss <- data.frame("measures per site"=rownames(ss), "number of sp"=ss[,1], row.names=NULL)
+library(DT)
+datatable(ss, rownames=F, options = list(pageLength = 20, dom="t"), width=15)
+# maximum can be 10 individuals in Int and 10 individuals in Ext
+# thus, 20 individuals measured 10 traits = 200 measures / per sp / per site
+```
+
+## Measurements per species
+```{r}
+sps <- data.frame(table(traits$sp))
+sps <- sps[sps$Freq!=0,]
+# datatable(sps[order(sps$Freq, decreasing=T),], rownames=F, colnames=c("Species", "Number of measurements"), escape=FALSE, options = list(searching = FALSE))
+
+datatable(sps[order(sps$Freq, decreasing=T),], colnames=c("Species", "Number of measurements"), rownames=F, escape=FALSE, options = list(searching=F))
+```
+
+## Measurements per species and trait
+```{r}
+# sort(apply(traps[,-c(1:4)], 2, sum))
+
+# table(traits[traits$sp=="Digitonthophagus_gazella","trait"])
+# spxtrait <- aggregate(traits$value, list("sp"=traits$sp), function(x){table(x[complete.cases(x)])})
+myt <- traits[complete.cases(traits),]
+spxtrait <- aggregate(myt$trait, list("sp"=myt$sp), table)
+spxtrait <- cbind("sp"=spxtrait$sp, data.frame(spxtrait$x))
+datatable(arrange(spxtrait, desc(spxtrait$el)), rownames=F)
+```
+
+## Some trait values are missing
+```{r}
+options(htmlwidgets.TOJSON_ARGS = list(na = 'string'))
+datatable(traits[is.na(traits$value),c(1,4,5,7,8)], option=list(dom="t"), rownames=F)
+```
+
+
+
+
+
+
+```{r, eval=F}
+# Other mistakes that were solved
+absp <- paste0(labun$sp, ".", labun$code)
+trsp <- paste0(uavg$sp, ".", uavg$code)
+# setdiff(absp, trsp)
+setdiff(trsp, absp)
+
+# ejemplo
+traps[traps$code=="USA01Int",c("code", "Alloblackburneus_rubeolus"), drop=F]
+traits[traits$code=="USA01Int" & traits$sp=="Alloblackburneus_rubeolus",c(1,4,7,8)]
+grep("rubeolus", trsp, value=T)
+grep("rubeolus", absp, value=T)
+
+# pero otras 4-5 comprobaciones tb se cumplen
+# Canthidium_pseudopuncticolle.MEX03Int
+# Onthophagus_similis.SPA01Int
+# Aphodius_fimetarius.SPA02Ext
+# Onthophagus_buculus.BRA02Int
+```
+
+```{r, eval=F}
+mex05 <- traps[traps$site=="MEX05",]
+mex05.named <- t(mex05[,c(1:4, 4+which(apply(mex05[,5:length(mex05)],2,sum)!=0))])
+mex05 <- mex05[,4+which(apply(mex05[,5:length(mex05)],2,sum)!=0)]
+sum(mex05)
+t(mex05)
+apply(mex05, 2, sum)
+
+
+mex06 <- traps[traps$site=="MEX06",]
+mex06.named <- t(mex06[,c(1:4, 4+which(apply(mex06[,5:length(mex06)],2,sum)!=0))])
+mex06 <- mex06[,4+which(apply(mex06[,5:length(mex06)],2,sum)!=0)]
+sum(mex06)
+t(mex06)
+apply(mex06, 2, sum)
+```

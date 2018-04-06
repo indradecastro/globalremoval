@@ -1,0 +1,7 @@
+import	raw	read.table	T	c
+unnamed-chunk-1	library	plyr	waterloss	ddply	raw	.	site	type	manejo	unit	summarize	initial_dung_wet	final_dung_wet	waterloss.controls	avg.waterloss	summarise	mean	T	xp	merge	wet.rem48	with
+unnamed-chunk-2	xp	water.prop	with	final_dung_wet	final_dung_dry	initial_dung_dry	initial_dung_wet	dry.rem48
+unnamed-chunk-3	write.table	xp	F
+unnamed-chunk-4	xp	unit	as.factor	rem.site	ddply	.	site	manejo	type	numcolwise	mean	T	all	org
+unnamed-chunk-5	intvars	c	all.rem	merge	all	org	names	site	substr	code	dry.rem48.DungBeetles	with	dry.rem48.all	dry.rem48.OtherOrgs
+unnamed-chunk-6	all.rem	wet.rem48.OtherOrgs	round	as.numeric	format	write.table	F

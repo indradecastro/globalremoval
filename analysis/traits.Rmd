@@ -1,0 +1,165 @@
+---
+title: "Explorative analysis of 'traits' data"
+author: "indra deCastro"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
+# options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+```
+
+## Import data
+```{r import, echo=T}
+traits <- read.table("data/traits.csv", header=T, sep=",", na.strings="-")
+```
+
+```{r}
+##### very important chunk #####
+# used further down
+library(plyr)
+avg <- ddply(traits, .(trait, sp, code), summarize,
+             "n" = length(value),
+             "avg" = mean(value),
+             "sd" = sd(value))
+```
+
+
+## Traits summary
+```{r}
+library(DT)
+avg %>% 
+      datatable(rownames=F) %>% 
+      formatRound(columns=c("avg", "sd"), digits=3)
+```
+
+## Search outliers
+```{r}
+# hist(log10(avg[avg$trait=="biomass","avg"]), main="Distribution of species biomass", xlab="log(biomass)")
+
+# head(traits)
+# library(reshape)
+# wide <- reshape(traits, varying=traits$trait, direction="wide")
+```
+
+
+```{r}
+myt <- traits
+myt$value[myt$trait=="biomass"] <- 1000*myt$value[myt$trait=="biomass"]
+# boxplot(log10(value) ~ trait, data=myt, main="All species")
+
+# prepare image
+library(png)
+img <- readPNG("text/bug.png")
+library(grid)
+bug <- rasterGrob(img, interpolate=TRUE)
+
+library(ggplot2)
+white.violins <- myt %>% 
+      ggplot() +
+      aes(x=trait, y=log10(value)) +
+      annotation_custom(bug, xmin=7, xmax=11, ymin=1, ymax=Inf) +
+      geom_violin() +
+      geom_dotplot(binaxis='y', stackdir='center', dotsize=0.005) +
+      labs(x="", y="log10(value)", title="All species")
+      
+white.violins
+
+```
+
+```{r, eval=F}
+myt <- traits
+myt$value[myt$trait=="biomass"] <- 1000*myt$value[myt$trait=="biomass"]
+sp <- "Digitonthophagus_gazella"
+mysp <- myt$sp==sp
+
+white.violins <- myt %>% 
+      ggplot() +
+      aes(x=trait, y=log10(value), colour=as.factor(mysp)) +
+      geom_violin(show.legend=F) +
+      geom_dotplot(binaxis='y', stackdir='center', dotsize=0.005, show.legend=F) +
+      labs(x="", y="log10(value)", title=paste("Separate", sp))
+      
+white.violins
+```
+
+
+
+```{r, eval=F}
+# select a sp
+myt <- traits
+myt$value[myt$trait=="biomass"] <- 1000*myt$value[myt$trait=="biomass"]
+sp <- "Digitonthophagus_gazella"
+myt <- myt[myt$sp==sp,] # remeber to change title!!!!
+# separate by sp
+mysp <- myt$sp==sp
+# separate by site
+site <- "MEX06"
+mysite <- grepl(site, myt$code)
+any(mysite==T)
+# build title
+mymain <- paste(sp, "data for ALL and separate", site, "(blue)")
+# mymain <- paste("Data for ALL and separate", site, "(blue)")
+
+
+
+# plot
+white.violins <- myt %>% 
+      ggplot() +
+      aes(x=trait, y=log10(value), colour=as.factor(mysite)) +
+      geom_violin(show.legend=F) +
+      geom_dotplot(binaxis='y', stackdir='center', dotsize=0.005, show.legend=F) +
+      labs(x="", y="log10(value)", title=mymain)
+      
+white.violins
+
+# myt[myt$value==max(myt$value, na.rm=T),]
+# (myt[myt$sp==sp & myt$trait=="pw","value"])
+# head(arrange(myt, desc(value)))
+# head(arrange(myt, value))
+```
+
+## Check protibia ratio
+```{r}
+# check for protibia ratio
+pt.traits <- cbind(traits[traits$trait=="ptw",c("code", "sp", "ind")],
+                   "ptw"=traits[traits$trait=="ptw",c("value")],
+                   "ptl"=traits[traits$trait=="ptl","value"])
+pt.traits$pt.ratio <- (pt.traits$ptw / pt.traits$ptl)
+perc <- 0.995
+umbral <- quantile(pt.traits$pt.ratio, probs=c(perc))
+par(mfrow=c(1,2))
+plot(sort(pt.traits$pt.ratio), ylab="protibia ratio (ptw/ptl)", xlab="", ylim=c(0,1)); abline(h=umbral)
+hist(pt.traits$pt.ratio, main="", xlab="protibia ratio (ptw/ptl)", xlim=c(0,1))
+
+# explore detailed values
+# arrange(pt.traits[pt.traits$pt.ratio>umbral,], pt.ratio)
+arrange(pt.traits, desc(pt.ratio)) %>% 
+      datatable(options=list(searching=F)) %>% 
+      formatRound(columns=c("pt.ratio"), digits=3)
+```
+
+
+```{r, eval=F}
+ # There are certainly some outliers in this species: `r sp`.
+sp1 <- myt[myt$sp=="Trichillum_externepunctatum",]
+sp2 <- myt[myt$sp=="Tiniocellus_spinipes",]
+ss <- rbind(sp1,sp2)
+ss$sp <- droplevels(ss$sp)
+boxplot(value ~ sp, data=ss)
+head(arrange(ss, desc(value)))
+
+cbind(sp1[grep("03", sp1$code, invert=F),c(1,4,5,7,8)],
+"new"=ddply(sp1[grep("03", sp1$code, invert=T),], .(trait), summarise,
+      "new" = rnorm(n=10, mean=1.5*quantile(value)[4], sd=2*sd(value)))[,2]
+)
+
+```
+
+

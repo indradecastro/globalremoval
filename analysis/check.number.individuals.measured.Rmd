@@ -1,0 +1,82 @@
+---
+title: "Check individuals captured and measured"
+author: "indra deCastro"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=F, fig.width=10)
+# options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+```
+
+## Import data
+```{r import, echo=T}
+traps <- read.table("data/traps.csv", header=T, sep=",")
+traits <- read.table("data/traits.csv", header=T, sep=",", na.strings="-")
+```
+
+## Create function
+```{r, echo=T}
+check.measurements <- function(site){
+      asite <- apply(traps[traps$code==site,-c(1:4)], 2, sum)
+      abun <- data.frame("site"=unique(names(asite[asite!=0])), "abund"=asite[asite!=0], row.names=NULL)
+      names(abun) <- c(site, "abund")
+      
+      tsite <- traits[traits$code==site, c("sp", "ind")]
+      meas <- aggregate(tsite$ind, list(tsite$sp), function(x){length(unique(x))})
+      names(meas) <- c(site, "nmeas")
+      
+      mer <- merge(abun, meas, all=T)
+      mer$poss <- ifelse(mer$abund-mer$nmeas<0, "PROB", "")
+      return(mer)
+}
+```
+
+## Apply function
+```{r, echo=F}
+# check.measurements("BRA02Ext")
+# check.measurements("BRA02Int")
+
+che <- lapply(as.character(sort(unique(traps$code))), check.measurements)
+# probs <- sapply(che, function(x){any(x$poss!="")|any(is.na(x$poss))})
+# probs <- sapply(che, function(x){any(x$poss!="")|any(is.na(x$abun))})
+probs <- sapply(che, function(x){any(is.na(x$abun))})
+```
+
+```{r, eval=T}
+che
+```
+
+
+<!-- ## These sites have correct number of individuals measured -->
+```{r, eval=F}
+unlist(sapply(che[!probs], function(x){names(x)[1]}))
+```
+
+<!-- ## These sites have PROBLEMS with individuals measured -->
+```{r, eval=F}
+che[probs]
+```
+
+
+```{r}
+probs <- sapply(che, function(x){any(x$poss!="")|any(is.na(x$poss))})
+prob.lines <- lapply(che[probs], function(x){
+      prob.lines <- cbind("site"=names(x)[1], x[is.na(x$poss)|x$poss!="",])
+      names(prob.lines) <- c("site", "sp", "abund", "nmeas", "poss")
+      return(prob.lines)})
+
+prob.lines <- do.call(rbind, prob.lines)
+prob.lines$poss <- gsub("PROB", "greater", prob.lines$poss)
+library(plyr)
+prob.lines$sp <- as.character(prob.lines$sp)
+arrange(prob.lines, site, sp)
+dim(prob.lines[!complete.cases(prob.lines),])
+```
+

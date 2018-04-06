@@ -1,0 +1,167 @@
+---
+title: "Clean 'Traps' data"
+author: "indra deCastro"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+<style type="text/css">
+.table {
+    width: 100%;
+}
+</style>
+
+```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
+options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+```
+
+## Import data
+```{r import, echo=T}
+raw <- read.table("data/traps.csv", header=T, sep="\t", check.names=F, na.strings=c("","-"))
+```
+
+## Basic editing
+```{r, results=F}
+raw$manejo <- factor(raw$manejo, labels=c("Int", "Ext"))
+raw$no_trap <- as.factor(raw$no_trap)
+
+# change all NA values into ZEROS
+raw[is.na(raw)] <- 0
+names(raw)[1:5]
+# cat(paste(sum(raw[-c(1:3)]), "individuals in the whole table"))
+
+# check that no names have spaces
+# grep(" ", names(raw), value=T, perl=F)
+
+# reorder columns so that "site" is the first column
+# NOT USED as it adds numbers at the end of colnames to ensure uniqueness
+# raw <- raw[,c("site", names(raw)[names(raw)!="site"])]
+```
+
+## Study species (du/tri/...)-plicates
+```{r sp.dup, results=F}
+# change BIG "S" to lowercase "s" in species names with "sp"
+# names(raw)[grep("Sp[0-9]$", names(raw))] <- gsub("_S", "_s", grep("Sp[0-9]$", names(raw), value=T), fixed=T)
+
+# species that appear in more than one column
+# and have given a name with "sp[0-9]"
+spsp <- sort(grep("sp[0-9]$", names(raw), value=T))
+dupspsp <- spsp[duplicated(spsp)]
+dupspcols <- unique(unlist(lapply(dupspsp, function(x){which(names(raw)==x)})))
+
+# add site name at end of species
+names(raw)[dupspcols] <- sapply(dupspcols, function(sp){
+      spsites <- raw$codigo_parcela[which(raw[,sp]!=0)]
+      spsites <- unique(strtrim(as.character(spsites), 5))
+      paste0(names(raw)[sp], ".", spsites)
+})
+
+# check that none of the species with "sp" is duplicated
+any(duplicated(sort(grep("sp[0-9]$", names(raw), value=T)))==T)
+```
+
+## Check for typos in species names
+```{r}
+# select names that DO NOT contain "sp"
+nosp <- grep("sp[0-9]", names(raw)[-c(1:3)], value=T, invert=TRUE)
+
+# fuzzy searching of duplicates
+possible.typos <- lapply(unique(nosp), function(x){agrep(paste0("^", x, "$"), unique(nosp), value=T, max.distance=0.2)})
+```
+
+## Merge columns with same species name
+```{r, results=F}
+aggr <- as.data.frame(do.call(cbind, by(t(raw[-c(1:3)]), INDICES=names(raw)[-c(1:3)], FUN=colSums)))
+# cat(paste(sum(aggr), "individuals in the whole table"))
+small <- cbind("site"=strtrim(raw$codigo_parcela, 5), raw[1:3], aggr)
+names(small)[1:5]
+# cat(paste(sum(small[-c(1:4)]), "individuals in the whole table"))
+```
+
+## Save clean and checked table for future use
+
+
+# Data summary
+```{r, echo=F, results=F}
+abund.sp <- apply(small[-c(1:4)], 2, sum)
+range(abund.sp)
+summary(abund.sp)
+```
+
+## General
+Number of sites: `r length(unique(small$site))`  
+Number of traps: `r length(unique(paste0(small$site, small$no_trap)))`  
+Number of species: `r length(names(small))`  
+Total abundance: `r as.integer(sum(small[-c(1:4)]))`  
+
+## Abundance by species
+```{r}
+topsp <- data.frame("abund"=sort(apply(small[-c(1:4)], 2, sum), decreasing=T))
+library(DT)
+datatable(topsp, rownames=T)
+```
+
+### Species abundance
+```{r}
+summary(abund.sp)
+```
+
+### Number of singletons: `r length(which(apply(small[-c(1:4)], 2, sum)==1))`
+
+### Most widely sampled species
+```{r}
+trap.sp <- data.frame("number of traps present"=sort(apply(small[-c(1:4)], 2, function(x){length(which(x!=0))}), decreasing=T))
+datatable(trap.sp, rownames=T)
+```
+
+## By site
+### Total abundance by site and treatment
+```{r}
+abund.trap <- cbind(small[1:3], "abund"=apply(small[-c(1:4)], 1, sum))
+library(plyr)
+abund.sites <- ddply(abund.trap, .(codigo_parcela), summarize,
+                     "tot"=sum(abund),
+                     "mean"=mean(abund),
+                     "sd"=sd(abund))
+
+tot.abund.site <- data.frame("site" = unique(abund.trap$site),
+      "Int" = abund.sites[grep("Int", abund.sites$codigo_parcela),"tot"],
+      "Ext" = abund.sites[grep("Ext", abund.sites$codigo_parcela),"tot"])
+
+datatable(tot.abund.site)
+```
+
+### Summary for abundance by treatment
+```{r}
+# round(rbind("min"=apply(tot.abund.site[,c("Int", "Ext")], 2, min),
+#       "mean"=apply(tot.abund.site[,c("Int", "Ext")], 2, mean),
+#       "sd"=apply(tot.abund.site[,c("Int", "Ext")], 2, sd),
+#       "max"=apply(tot.abund.site[,c("Int", "Ext")], 2, max),
+#       "tot"=apply(tot.abund.site[,c("Int", "Ext")], 2, sum)),2)
+
+abund.summary <- round(rbind(
+      cbind("Int"=c(summary(tot.abund.site$Int)[1:4], "Stdev."=sd(tot.abund.site$Int), summary(tot.abund.site$Int)[5:6]), 
+            "Ext"=c(summary(tot.abund.site$Ext)[1:4], "Stdev."=sd(tot.abund.site$Ext), summary(tot.abund.site$Ext)[5:6])),
+      "Tot."=apply(tot.abund.site[,c("Int", "Ext")], 2, sum)
+      ),2)
+
+datatable(abund.summary)
+```
+
+
+```{r writedata}
+names(small)[1:4] <- c("site", "code", "manejo", "trap")
+
+## Write new clean table
+write.csv(small, paste0("data/", format(Sys.time(), '%Y%m%d'), ".traps.csv"), row.names=F, quote=F)
+```
+
+
+
+

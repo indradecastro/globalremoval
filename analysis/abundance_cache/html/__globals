@@ -1,0 +1,7 @@
+import	raw	read.table	T	F	c
+unnamed-chunk-1	etiq.cols	praw	raw	etiq
+unnamed-chunk-2	sum	praw	abun.site	aggregate	list	raw	code	rownames	Group.1	apply	data.frame	names	substr	library	reshape2	abun.treat	dcast	site	manejo	DT	datatable	F
+rich.sites	wilcox.test	log10	abun	manejo	abun.site	T	library	plyr	dplyr	ggplot2	ggsignif	white.violins	%>%	ggplot	aes	geom_violin	labs	geom_signif	list	c	F	geom_dotplot
+pairedplot	library	PairedData	pd	with	log10	abun.treat	c	paired	Ext	Int	plot	theme_bw	labs
+unnamed-chunk-3	abun.trap	apply	praw	sum	data.frame	raw	code	substr
+unnamed-chunk-4	abun.trap.pval	ddply	abun.trap	.	site	summarize	wilcox.test	log10	abun	manejo	F	p.value	ord.trap.pvals	arrange	pval	datatable	%>%	formatRound	c	merge	factor	unique	white.violins	ggplot	aes	geom_violin	facet_wrap	labs	scale_y_continuous	geom_signif	list	T	geom_dotplot

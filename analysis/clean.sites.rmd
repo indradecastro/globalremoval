@@ -2,32 +2,159 @@
 title: "Clean 'Sites' data"
 author: "indra deCastro"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: html_document
+output:
+  html_document:
+    toc: true
+    theme: united
 ---
-
-<style type="text/css">
-.table {
-
-    width: 40%;
-
-}
-</style>
 
 ```{r setup, include=FALSE}
 # setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
 knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
 knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
-options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+# options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
 ```
 
 ## Import data
-```{r import, echo=T}
-raw <- read.table("data/sites.csv", header=T, sep=";", dec=",", na.strings="?")
+```{r import, echo=T, eval=T}
+raw <- read.table("data/sites.csv", header=T, sep=",", dec=",", na.strings="?", stringsAsFactors=F)
 ```
 
-## Fix coordinates
-```{r}
-library(measurements)
-gsub(",", ".", gsub("º|\\*|\\*\\*|\\", " ", raw$lat))
+## Mini summary
+Number of sites: `r length(unique(raw$site))`  
+It should be `r table(raw$manejo)[1]*2` sites.  
+```{r labels}
+labels <- 1:6
+library(knitr)
+apply(raw[labels[-c(1,5,6)]], 2, table)
+raw$manejo <- factor(raw$manejo, labels=c("Int", "Ext"))
+table(raw$manejo)
 ```
+
+```{r basic.edit}
+# library(measurements)
+# gsub(",", ".", gsub("º|\\*|\\*\\*|\\", " ", raw$lat))
+
+coo <- raw[,c("site", "lat", "lon")]
+coo <- na.omit(coo)
+```
+
+## Standardize diversity of coordinates systems
+### UK
+(system conversion in [this web](https://www.r-bloggers.com/converting-british-national-grid-references/))
+```{r uk}
+wal <- gsub(" ", "", coo[grep("WAL", coo$site),"lat"])
+library(rnrfa)
+coo[grep("WAL", coo$site),"lat"] <- osg_parse(wal, CoordSystem="WGS84")$lat
+
+coo[grep("WAL", coo$site),"lon"] <- osg_parse(wal, CoordSystem="WGS84")$lon
+```
+
+### UTM
+```{r utm}
+# use only locations with coordinates
+coo <- coo[complete.cases(coo),]
+
+myutm <- coo[grep("[0-9][A-Z][0-9]", coo$lat),]
+names(myutm) <- c("ID", "lon", "lat")
+uzone <- as.numeric(strtrim(myutm$lon,2))
+ulon <- as.numeric(as.character(substr(myutm$lon,4,15)))
+ulat <- as.numeric(as.character(myutm$lat))
+
+library(rgdal)
+utmcoor32 <- SpatialPoints(list("lon"=ulon[uzone=="32"], "lat"=ulat[uzone=="32"]), proj4string=CRS("+proj=utm +zone=32"))
+utmcoor14 <- SpatialPoints(list("lon"=ulon[uzone=="14"], "lat"=ulat[uzone=="14"]),
+                           proj4string=CRS("+proj=utm +zone=14"))
+
+utmcoor <- data.frame(spTransform(utmcoor32, CRS("+proj=longlat")))
+utmcoor <- rbind(utmcoor, data.frame(spTransform(utmcoor14, CRS("+proj=longlat"))))
+
+# modify original UTM coordinates to decimal
+coo[grep("[0-9][A-Z][0-9]", coo$lat), "lon"] <- utmcoor$lon
+coo[grep("[0-9][A-Z][0-9]", coo$lat), "lat"] <- utmcoor$lat
+```
+
+### Degreed
+```{r}
+mydeg <- coo[grep("[A-Z]$", coo$lat),]
+mydeg$lat <- gsub("  ", " ", mydeg$lat)
+mydeg$lon <- gsub("  ", " ", mydeg$lon)
+
+mydeg$lat <- gsub("([0-9])([A-Z])", "\\1 \\2", mydeg$lat, perl=T)
+mydeg$lon <- gsub("([0-9])([A-Z])", "\\1 \\2", mydeg$lon, perl=T)
+```
+
+```{r}
+# Correct some mistakes (spaces, missing cardinal direction etc)
+
+# grep("[0-9] +$", mydeg$lat)
+# # case of a missing cardinal direction (CHI01)
+# grep("[0-9] $", mydeg$lon, value=T)
+# mydeg$lon
+# mydeg$lon <- gsub("[0-9] $", " S", mydeg$lon)
+# # trailing spaces at the end
+# mydeg$lon <- gsub(" +$", "", mydeg$lon)
+
+# translate from spanish to english
+mydeg$lon <- gsub("O", "W", mydeg$lon)
+```
+
+
+```{r}
+# remove cardinal letter
+mydeg$clat <- mydeg$lat
+mydeg$clon <- mydeg$lon
+mydeg$lat <- gsub("(.*) S$", "-\\1", mydeg$clat, perl=T)
+mydeg$lat <- gsub("(.*) N$", "\\1", mydeg$lat, perl=T)
+mydeg$lon <- gsub("(.*) E$", "\\1", mydeg$clon, perl=T)
+mydeg$lon <- gsub("(.*) W$", "-\\1", mydeg$lon, perl=T)
+
+# convert from decimal minutes to decimal degrees
+library(measurements)
+mydeg$lat <- conv_unit(mydeg$lat, from='deg_min_sec', to='dec_deg')
+mydeg$lon <- conv_unit(mydeg$lon, from='deg_min_sec', to='dec_deg')
+
+# paste back to original dataframe
+mycoo <- coo
+mycoo[grep("[A-Z]$", coo$lat), "lat"] <- mydeg$lat
+mycoo[grep("[A-Z]$", coo$lat), "lon"] <- mydeg$lon
+```
+
+```{r}
+# place coordinates back to df and save to excel
+raw[,c("lat", "lon")] <- NULL
+raw <- merge(raw, mycoo)
+write.csv(raw, "data/sites.st.csv", row.names=F)
+```
+
+
+## Plot all sites
+```{r, results="asis", cache=F, eval=T}
+# needed for googleVis::gvisGeoChart
+sites <- data.frame("LatLong"=paste(mycoo$lat, mycoo$lon, sep=":"))
+sites$tip <- mycoo$site
+# sites$tip <- paste(paste("Alt:", raw$alt, "m"),
+                 # paste("Prec:", raw$prec, "mm/año"),
+                 # paste("Tmean:", raw$tavg, "ºC"),
+                 # paste("Raref.Rich:", div$raref.rich, "species"),
+                 # paste("Beta.tot:", round(div$mpair.Btot, 2)),
+                 # paste("Bray.tot:", round(div$mpair.BrayTot, 2)),
+                 # sep="<BR>")
+
+
+library(googleVis)
+library(knitr)
+op <- options(gvis.plot.tag='chart')
+# op <- options(gvis.print.tag='chart')
+intmap <- gvisMap(sites[,], "LatLong" , "tip", 
+                     options=list(showTip=TRUE, 
+                                  showLine=TRUE, 
+                                  enableScrollWheel=TRUE,
+                                  mapType='terrain', 
+                                  useMapTypeControl=TRUE))
+plot(intmap)
+```
+
+***
+***
 

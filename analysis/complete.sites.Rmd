@@ -1,0 +1,150 @@
+---
+title: "Clean 'Sites' data"
+author: "indra deCastro"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+      html_document:
+      toc: true
+theme: united
+---
+      
+```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
+# options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+```
+
+## Import data
+```{r import, echo=T, eval=T}
+raw <- read.table("data/sites.csv", header=T, sep=",", dec=",", na.strings="?", stringsAsFactors=F)
+```
+
+### Names of all variables
+- BIO1 = Annual Mean Temperature
+- BIO2 = Mean Diurnal Range (Mean of monthly (max temp - min temp))
+- BIO3 = Isothermality (- BIO2/- BIO7) (* 100)
+- BIO4 = Temperature Seasonality (standard deviation *100)
+- BIO5 = Max Temperature of Warmest Month
+- BIO6 = Min Temperature of Coldest Month
+- BIO7 = Temperature Annual Range (- BIO5-- BIO6)
+- BIO8 = Mean Temperature of Wettest Quarter
+- BIO9 = Mean Temperature of Driest Quarter
+- BIO10 = Mean Temperature of Warmest Quarter
+- BIO11 = Mean Temperature of Coldest Quarter
+- BIO12 = Annual Precipitation
+- BIO13 = Precipitation of Wettest Month
+- BIO14 = Precipitation of Driest Month
+- BIO15 = Precipitation Seasonality (Coefficient of Variation)
+- BIO16 = Precipitation of Wettest Quarter
+- BIO17 = Precipitation of Driest Quarter
+- BIO18 = Precipitation of Warmest Quarter
+- BIO19 = Precipitation of Coldest Quarter
+
+### 
+```{r, eval=F}
+library(raster)
+library(sp)
+
+extract.point.values <- function(coords, var="bio"){
+      site <- coords[1]
+      coords <- coords[2:3]
+      
+      r <- getData("worldclim", var=var, res=0.5, lon=as.numeric(coords[1]), lat=as.numeric(coords[2]), path="/media/indra/KREAS/my20180315temp/")
+      
+      # OPTIONAL show data at current moment
+      plot(r[[1]], main=site)
+      points <- SpatialPoints(data.frame(t(as.numeric(coords))), proj4string = r@crs)
+      points(points, pch="+")
+      text(coords, site, cex=0.8, pos=4)
+      
+      # name layers and extract values in our sites
+      names(r) <- paste("BIO", 1:19, sep=".")
+      points <- SpatialPoints(data.frame(t(as.numeric(coords))), proj4string = r@crs)
+      values <- extract(r, points)
+      rm(r)
+      
+      # save data 
+      values <- data.frame(values, row.names=site)
+      return(values)
+}
+
+wclim2df <- function(coords){
+      sites <- coords$site
+      print(as.character(sites))
+      if(names(coords)[2]!="x" & names(coords)[3]!="y"){
+            cat("Provide coordinates in a dataframe with names 'x' (=longitude) and 'y' (=latitude)")
+      }
+      lall <- apply(coords, 1, function(x){extract.point.values(x)})
+      cbind(sites, do.call(rbind, lall))
+}
+```
+
+### Download and Extract data for all sites
+```{r}
+coords <- as.data.frame(apply(raw[,c("lon", "lat")], 2, as.numeric))
+coords <- cbind(raw$site, coords)
+names(coords) <- c("site", "x", "y"); head(coords)
+n <- 1:nrow(coords)
+# n <- 75:nrow(coords) # solo para pruebas
+coords <- coords[n,]
+
+# NOT RUN !! interent intensive!!
+# run only once to download from web
+# myclimate <- wclim2df(coords)
+```
+
+### Export all climatic values to an excel sheet
+```{r}
+# write.table(myclimate, "data/bioclim.csv", row.names=F, quote=F, sep=";")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Plot all sites
+```{r, results="asis", cache=F}
+# needed for googleVis::gvisGeoChart
+sites <- data.frame("LatLong"=paste(raw$lat, raw$lon, sep=":"))
+sites$tip <- raw$site
+sites$tip <- paste(paste(raw$site),
+                   paste("Alt:", raw$alt, "m"),
+                   # paste("Prec:", raw$prec, "mm/año"),
+                   # paste("Tmean:", raw$tavg, "ºC"),
+                   # paste("Raref.Rich:", div$raref.rich, "species"),
+                   # paste("Beta.tot:", round(div$mpair.Btot, 2)),
+                   # paste("Bray.tot:", round(div$mpair.BrayTot, 2)),
+                   sep="<BR>")
+
+
+library(googleVis)
+library(knitr)
+op <- options(gvis.plot.tag='chart')
+# op <- options(gvis.print.tag='chart')
+intmap <- gvisMap(sites[,], "LatLong" , "tip", 
+                  options=list(showTip=TRUE, 
+                               showLine=TRUE, 
+                               enableScrollWheel=TRUE,
+                               mapType='terrain', 
+                               useMapTypeControl=TRUE))
+plot(intmap)
+```
+
+***
+      ***

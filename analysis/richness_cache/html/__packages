@@ -1,0 +1,15 @@
+base
+permute
+lattice
+vegan
+reshape2
+DT
+plyr
+dplyr
+ggplot2
+ggsignif
+MASS
+gld
+mvtnorm
+PairedData
+bindrcpp

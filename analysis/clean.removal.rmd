@@ -7,9 +7,7 @@ output: html_document
 
 <style type="text/css">
 .table {
-
     width: 40%;
-
 }
 </style>
 
@@ -22,12 +20,12 @@ options(markdown.HTML.header = system.file("misc", "datatables.html", package = 
 
 ## Import data
 ```{r import, echo=T}
-raw <- read.table("data/removal.csv", header=T, sep=";", na.strings=c("-", "N/A"))
+raw <- read.table("data/removal.csv", header=T, sep=",", na.strings=c("-", "N/A", "NA"))
 ```
 
 ## Check for table consistency
 i.e. check for: Number of Sites? number of treatments? number of experimental units?...  
-Number of sites: `r length(unique(raw$codigo_parcela))`
+Number of sites: `r length(unique(raw$codigo_parcela))/2`
 ```{r labels}
 labels <- 1:4
 apply(raw[labels], 2, table)
@@ -70,24 +68,24 @@ pairs(raw[-labels], bg = "grey80", diag.panel = panel.hist, cex.labels = 1, uppe
 # pairs(raw[-labels])
 ```
 
-### dung_final_dry
-There is an obvious outlier in data point in *dung_final_dry*:  
-```{r outliers}
+<!-- ### dung_final_dry -->
+<!-- There is an obvious outlier in data point in *dung_final_dry*:   -->
+```{r outliers, eval=F}
 plot(raw$final_dung_dry, pch=c(1,19)[as.factor(raw$final_dung_dry==max(raw$final_dung_dry, na.rm=T))], col=c("black", "red")[as.factor(raw$final_dung_dry==max(raw$final_dung_dry, na.rm=T))], cex=c(1,2)[as.factor(raw$final_dung_dry==max(raw$final_dung_dry, na.rm=T))])
 
 t(raw[which(raw$final_dung_dry==max(raw$final_dung_dry, na.rm=T)),])
 ```
-Is is a typo when digitalizing data?  
-Look at the values in the replicates of this experiment:  
-```{r}
+<!-- Is is a typo when digitalizing data?   -->
+<!-- Look at the values in the replicates of this experiment:   -->
+```{r, eval=F}
 plot(raw[raw$codigo_parcela=="AUS02Int","final_dung_dry"])
 summary(raw[raw$codigo_parcela=="AUS02Int","final_dung_dry"])
 
 # correct 
 raw[which(raw$final_dung_dry==max(raw$final_dung_dry, na.rm=T)), "final_dung_dry"] <- 161
 ```
-Should the first "1" be deleted? Thus, the correct value be 161.0?  
-I have corrected it for future exploration, but NOT in the original data table.  
+<!-- Should the first "1" be deleted? Thus, the correct value be 161.0?   -->
+<!-- I have corrected it for future exploration, but NOT in the original data table.   -->
 
 ### Dry variables
 Moreover,  
@@ -95,32 +93,40 @@ The variable "dry_paper_bag"
 `r raw[which(raw$dry_paper_bag>20),"dry_paper_bag"]`  
 and "cont_dung_dry" have a problem:  
 `r raw[which(raw$cont_dung_dry>200),"cont_dung_dry"]`  
-Most probably it is due to dragging the initial value (25.89 and 207.13) in Excel to complete the other values.
+Most probably it is due to dragging the initial value (25.89 and 207.13) in Excel to complete the other values.  
+However, this 207.13gr seems an outlier for that variable.  
+**Is this possible?** Might it be 20.713 ??
 
 ```{r testdrypaper}
 raw$newdrypaper <- raw$dry_paper_bag
 raw$newdrypaper[raw$newdrypaper>25.89] <- 25.89
 
 raw$newcontdung <- raw$cont_dung_dry
-raw$newcontdung[raw$newcontdung>207.13] <- 207.13
+raw$newcontdung[raw$newcontdung>=207.13] <- 20.713
 
 pairs(raw[c("initial_dung", "final_dung_wet", "final_dung_dry", "newcontdung", "paper_bag", "newdrypaper")], bg = "grey80", diag.panel = panel.hist, cex.labels = 1, upper.panel=NULL)
 ```
 
 ### Variables of interest
 ```{r}
+clean.removal <- raw[,c("codigo_parcela", "manejo", "unidad", "no_unidad", "initial_dung", "final_dung_wet", "final_dung_dry")]
+clean.removal$manejo <- substring(clean.removal$codigo_parcela, 6,9)
+names(clean.removal) <- c("site", "manejo", "type", "unit", "initial_dung_wet", "final_dung_wet", "final_dung_dry")
+# write.table(clean.removal, "data/clean.removal.csv", row.names=F, quote=F, sep=";")
+
+
 raw <- raw[-grep(x=names(raw), pattern=c("dry|bag|new"))]
 ```
 
 ### Initial dung
 ```{r initialdung}
-hist(raw$initial_dung, main="Weight of initial dung (grams)", xlab="grams of wet dung", ylab="number of samples", breaks=seq(min(raw$initial_dung)-1, max(raw$initial_dung)+1, 0.5)); box()
+hist(raw$initial_dung, main="Weight of initial dung (grams)", xlab="grams of wet dung", ylab="number of samples", breaks=seq(min(raw$initial_dung, na.rm=T)-1, max(raw$initial_dung, na.rm=T)+1, 0.5)); box()
 
-table(cut(raw$initial_dung, breaks=c(280,299.9,300,320), labels=c("smaller", "300gr", "bigger")))
+table(cut(raw$initial_dung, breaks=c(100,299.9,300,500), labels=c("smaller", "300gr", "bigger")))
 ```
 
-Most of the samples (`r round(length(which(raw$initial_dung==300.0)) / nrow(raw), 2)`%) weigh exactly 300.0 grams.  
-However, there are `r length(which(raw$initial_dung>300.0))` samples (`r round(length(which(raw$initial_dung>300.0)) / nrow(raw), 2)`%) over that weight.
+Most of the samples (`r round(length(which(raw$initial_dung==300.0)) / nrow(raw) *100, 2)`%) weigh exactly 300.0 grams.  
+However, there are `r length(which(raw$initial_dung>300.0))` samples (`r round(length(which(raw$initial_dung>300.0)) / nrow(raw) *100, 2)`%) over that weight.
 
 ### Final dung (wet)
 ```{r}
@@ -129,13 +135,13 @@ hist(raw$final_dung_wet, main="Weight of final dung (grams)", xlab="grams of wet
 # table(cut(raw$final_dung_wet, breaks=c(0,299.9,300,320), labels=c("smaller", "300gr", "bigger")))
 ```
 
-### Removal: Compute and explore
+## METHOD 1
 The complete removal formula is:  
 *Removal rate = (ExpIniWet - (ExpFinWet + WaterLoss)) / 48h*  
 Where *WaterLoss* is calculated as *ConIniWet - ConFinWet*  using the control experiments.  
 
 ### Water loss (evaporation in control experiments)
-```{r realremoval}
+```{r realremoval, fig.height=20, fig.width=15}
 library(plyr)
 waterdif <- ddply(raw, .(codigo_parcela, unidad, manejo, no_unidad), .fun=summarize, 
                   "waterdif" = initial_dung - final_dung_wet)
@@ -145,7 +151,7 @@ waterdif.cont$ID <- strtrim(waterdif.cont$codigo_parcela, width=5)
 
 # significance
 water.pval <- ddply(waterdif.cont, .(ID), summarize,
-                    "pval"=wilcox.test(waterdif ~ manejo)$p.value)
+                    "pval"=wilcox.test(waterdif ~ manejo, exact=F)$p.value)
                     
 
 waterdif.cont <- merge(waterdif.cont, water.pval)
@@ -158,14 +164,14 @@ library(ggsignif)
 white.violins <- ggplot(waterdif.cont) +
       aes(x=manejo, y=waterdif) +
       geom_violin() +
-      facet_wrap(~ID, ncol=4) +
+      facet_wrap(~ID, ncol=6) +
       labs(x="manejo", y="water loss", title="Evaporation in each treatment") +
-      scale_y_continuous(expand = c(0,0), limits=c(0,300)) +
+      scale_y_continuous(expand = c(0,0), limits=c(0,400)) +
       geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=TRUE)
 
 white.violins
 ```
-Note that the water loss is different (wilcoxon test) between SOME Intensive and Extensive treatments.  
+Note that the water loss is different (wilcoxon test) between **`r round(100*nrow(water.pval[which(water.pval$pval<0.05),])/nrow(water.pval),2)`%** Intensive and Extensive treatments.  
 **Is this reasonable??**  
 Are there important habitat differences between Intensive and Extensive treatments?  
 **Where Control experiments really beetle-free??**
@@ -210,18 +216,48 @@ library(DT)
 xp[which(xp$rem48<0),] %>%
       datatable(rownames=F, elementId="sixtyone") %>%
       formatRound(columns=c("H2O.loss", "rem48"), digits=2)
+
+xp$ID <- strtrim(xp$codigo_parcela, width=5)
 ```
 
-## Removal according to treatment
+
+
+## METHOD 2
+*dry.rem48 = (initial_dung_dry – final_dung_dry) / 48h*
+*initial_dung_dry =  initial_dung_wet \* (1 – water_proportion)*
+*water_proportion = final_dung_wet – final_dung_dry*
 ```{r}
-xp$ID <- strtrim(xp$codigo_parcela, width=5)
-usexp <- xp[which(xp$rem48>0),]
+met2 <- raw[,c("codigo_parcela", "manejo", "unidad", "initial_dung", "final_dung_wet", "final_dung_dry")]
+```
+
+
+## Export data
+```{r}
+rem.site <- ddply(xp, .(codigo_parcela, ID, manejo), summarise,
+                  "avg.wet.rem48" = mean(rem48),
+                  "std.wet.rem48" = sd(rem48))
+
+rem.site$manejo <- substring(rem.site$codigo_parcela, 6, 9)
+head(rem.site)
+names(rem.site) <- c(c("code", "site"), names(rem.site)[3:5])
+all <- Reduce(f=merge, x=list(abun.site, rich.site, even.site, rem.site))
+head(all)
+# write.table(all, "data/all.csv", row.names=F, quote=F, sep=";")
+```
+
+
+
+## Removal according to treatment
+```{r removal.plot, fig.height=20, fig.width=15}
+# usexp <- xp[which(xp$rem48>0),]
+usexp <- xp
+
 
 # significance
 usexp.pval <- ddply(usexp, .(ID), summarize,
-                    "pval"=wilcox.test(rem48 ~ manejo)$p.value)
+                    "pval"=wilcox.test(rem48 ~ manejo, exact=F)$p.value)
+# arrange(usexp.pval, pval)[17:21,]
                     
-
 usexp <- merge(usexp, usexp.pval)
 usexp <- arrange(usexp, pval)
 usexp$ID <- factor(usexp$ID, levels=unique(usexp$ID))
@@ -235,13 +271,43 @@ white.violins <- usexp %>%
       aes(x=manejo, y=rem48) +
       geom_violin() +
       # geom_boxplot() + 
-      facet_wrap(~ID, ncol=4) +
+      facet_wrap(~ID, ncol=6) +
       labs(x="manejo", y="Removal rate 48h (gr/h)", title="Dung Removal in each treatment") +
-      scale_y_continuous(expand = c(0,0), limits=c(0,4)) +
-      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=TRUE, test="wilcox.test")
+      scale_y_continuous(expand = c(0,0), limits=c(0,7.5)) +
+      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=T, test="wilcox.test", test.args=list(exact=F))
 
 white.violins
+arrange(usexp.pval, pval)
+```
+Note that the removal rate calculated in 48h is ONLY different (two-sided unpaired wilcoxon test) **`r nrow(usexp.pval[which(usexp.pval$pval<0.05),])`/`r nrow(usexp.pval)`** **(`r round(100*nrow(usexp.pval[which(usexp.pval$pval<0.05),])/nrow(usexp.pval),2)`%)** between Intensive and Extensive treatments.  
+**Is this reasonable??**  
+If no other statistical tool provides differences, it is useless searching environmental explanatory variables for such *homogeneous response variable*.
+
+
+<!-- ## Paired Wilcoxon test -->
+<!-- **reports even less significant differences in removal between treatments -->
+```{r paired.wilcox, eval=F}
+wwil <- reshape(usexp, direction="wide", drop=names(usexp)[-c(1,3,5,9)],
+        timevar="manejo", idvar=c("ID", "no_unidad"))
+
+# significance
+library(plyr)
+usexp.pval.paired <- ddply(wwil, .(ID), summarize,
+                    "pval.paired"=wilcox.test(x=rem48.Ext, y=rem48.Int, paired=T, exact=F)$p.value)
+
+usexp.pval.paired <- arrange(usexp.pval.paired, pval.paired)
+bothpvals <- merge(usexp.pval.paired, usexp.pval)
+arrange(bothpvals, pval.paired)
 ```
 
-
+<!-- trying to plot paired removal rates -->
+```{r, fig.height=20, fig.width=15, eval=F}
+library(ggpubr)
+p <- ggpaired(usexp, x="manejo", y="rem48", group=1,
+          color = "manejo", palette = "jco", add="jitter",
+          line.color = "gray", line.size = 0.4,
+          facet.by = "ID", short.panel.labs = FALSE)
+# Use only p.format as label. Remove method name.
+p + stat_compare_means(method = "wilcox.test", label = "p.format", paired = TRUE, method.args=list(exact="F"))
+```
 
