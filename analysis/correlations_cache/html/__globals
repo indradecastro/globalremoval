@@ -1,3 +1,6 @@
 import	raw	read.table	T
 unnamed-chunk-1	foc.names	c	paste0	foc	raw
-unnamed-chunk-2	library	dplyr	reshape2	allcor	as.matrix	cor	foc	allcor.melt	arrange	melt	abs	value	filter	paste0	substr	Var1	Var2
+unnamed-chunk-2	library	dplyr	reshape2	allcor	as.matrix	cor	foc	allcor.melt	arrange	melt	abs	value	allcor.uni	seq	nrow
+unnamed-chunk-3	filcor	filter	allcor.uni	Var1	Var2	paste0	substr
+unnamed-chunk-4	filcor0.5	filter	filcor	value	library	DT	datatable	F	list	nrow	%>%	formatRound	c
+unnamed-chunk-5	removal.cor	filter	filcor	substr	Var1	Var2	rem.left	grep	rem.right	with	data.frame	value	arr.rem.cor	arrange	rbind	datatable	F	%>%	formatRound	c

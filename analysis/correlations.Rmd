@@ -26,26 +26,40 @@ options(markdown.HTML.header = system.file("misc", "datatables.html", package = 
 raw <- read.table("data/all.csv", header=T, sep=";")
 ```
 
+```{r, echo=F}
+foc.names <- c("abun", "rich", "even", # taxonomic
+               paste0("BIO.", 1:19), # climatic
+               "rem.met1", "rem.met2", # removal
+               "lat", "altitud", # geographical
+               "land.history", "cow.dens", "anthelmintic", # manegement
+               "Fric.behav", "Feve.behav", "Fdis.behav", "RaoQ.behav", "mpd.behav", # functional for 9 relocationXsize categories
+               # "Fdiv.behav" cant be calculated if only categorical traits are used 
+               "Fric.morph", "Feve.morph", "Fdiv.morph", "Fdis.morph", "RaoQ.morph", "mpd.morph") # functional for morphological traits
+foc <- raw[,foc.names]
+# dim(foc)
+```
 
 ## Select variables to explore correlations
-Variables of interest:
+Variables of interest (`r ncol(foc)`):
 
-- taxonomic: "abun", "rich", "even"
-- climatic: paste0("BIO.", 1:19)
-- removal: "rem.met1", "rem.met2"
-- geographical: "lat", "altitud"
-- manegement: "land.history", "cow.dens"
-- functional for 9 relocationXsize categories: "Fric.behav", "Feve.behav", "Fdis.behav", "RaoQ.behav", "mpd.behav" (*"Fdiv.behav" cant be calculated if only categorical traits are used*)
-- functional for morphological: "Fric.morph", "Feve.morph", "Fdiv.morph", "Fdis.morph", "RaoQ.morph", "mpd.morph" traits
+- taxonomic: abun, rich, even
+- climatic: `r paste0("BIO.", 1:19)` 
+- removal: rem.met1, rem.met2
+- geographical: lat, altitud
+- manegement: land.history, cow.dens, anthelmintic
+- functional for 9 relocationXsize categories: Fric.behav, Feve.behav, Fdis.behav, RaoQ.behav, mpd.behav  
+(*Fdiv.behav cant be calculated if only categorical traits are used*)
+- functional for morphological traits: Fric.morph, Feve.morph, Fdiv.morph, Fdis.morph, RaoQ.morph, mpd.morph
 
-### Names of all variables
+Names of environmental variables:  
+
 - BIO1 = Annual Mean Temperature
 - BIO2 = Mean Diurnal Range (Mean of monthly (max temp - min temp))
-- BIO3 = Isothermality (- BIO2/- BIO7) (* 100)
+- BIO3 = Isothermality (BIO2/BIO7) (* 100)
 - BIO4 = Temperature Seasonality (standard deviation *100)
 - BIO5 = Max Temperature of Warmest Month
 - BIO6 = Min Temperature of Coldest Month
-- BIO7 = Temperature Annual Range (- BIO5-- BIO6)
+- BIO7 = Temperature Annual Range (BIO5--BIO6)
 - BIO8 = Mean Temperature of Wettest Quarter
 - BIO9 = Mean Temperature of Driest Quarter
 - BIO10 = Mean Temperature of Warmest Quarter
@@ -59,35 +73,51 @@ Variables of interest:
 - BIO18 = Precipitation of Warmest Quarter
 - BIO19 = Precipitation of Coldest Quarter
 
-```{r, echo=F}
-foc.names <- c("abun", "rich", "even", # taxonomic
-               paste0("BIO.", 1:19), # climatic
-               "rem.met1", "rem.met2", # removal
-               "lat", "altitud", # geographical
-               "land.history", "cow.dens", # manegement
-               "Fric.behav", "Feve.behav", "Fdis.behav", "RaoQ.behav", "mpd.behav", # functional for 9 relocationXsize categories
-               # "Fdiv.behav" cant be calculated if only categorical traits are used 
-               "Fric.morph", "Feve.morph", "Fdiv.morph", "Fdis.morph", "RaoQ.morph", "mpd.morph") # functional for morphological traits
-foc <- raw[,foc.names]
-```
-
-## Calculate correlations and filter
-Criteria:  
-
-- 0.5 as arbitrary threshold
-- identity corelations (Var1 = Var2)
-- correlation between climatic variables (both climatic)
-
+## Calculate correlations
 ```{r, echo=F}
 library(dplyr)
 library(reshape2)
 
-allcor <- as.matrix(cor(foc))
+allcor <- as.matrix(cor(foc, use="pairwise.complete.obs"))
 allcor.melt <- arrange(melt(allcor), -abs(value))
-dplyr::filter(allcor.melt,
-              value > .5 & # .5 is arbitrary
-              value != 1 & # these are just identity corelations (Var1 = Var2)
-              paste0(substr(Var1, 1,3), substr(Var2, 1,3)) != "BIOBIO") 
+# allcor.melt <- melt(allcor)
+allcor.uni <- allcor.melt[seq(1,nrow(allcor.melt), 2),]
+```
 
+## Filter correlations
+```{r}
+filcor <- dplyr::filter(allcor.uni,
+              Var1 != Var2 & # identity corelations
+              paste0(substr(Var1, 1,3), substr(Var2, 1,3)) != "BIOBIO" &
+              paste0(substr(Var1, 1,1), substr(Var2, 1,1)) != "FF"
+              )
+```
+
+### Highest correlations
+Criteria:  
+
+- 0.5 as arbitrary threshold
+- correlation between climatic variables (both climatic)
+```{r}
+filcor0.5 <- dplyr::filter(filcor, 
+                           value > 0.5 |
+                           value < -0.5) # .5 is arbitrary
+
+library(DT)
+datatable(filcor0.5, rownames=F, options = list(pageLength = nrow(filcor0.5), dom="t")) %>% formatRound(columns=c("value"), digits=3)
+```
+
+### All correlations for removal
+*Correlation between removal and all other variables regardless of the low correlation value*
+```{r}
+removal.cor <- dplyr::filter(filcor,
+              substr(Var1, 1,7) == "rem.met" |
+              substr(Var2, 1,7) == "rem.met")
+rem.left <- removal.cor[grep("rem.met", removal.cor$Var1),]
+rem.right <- removal.cor[grep("rem.met", removal.cor$Var2),]
+rem.right <- with(rem.right, data.frame("Var1"=Var2, "Var2"=Var1, value))
+arr.rem.cor <- arrange(rbind(rem.left, rem.right), Var1, Var2)
+
+datatable(arr.rem.cor, rownames=F) %>% formatRound(columns=c("value"), digits=3)
 ```
 

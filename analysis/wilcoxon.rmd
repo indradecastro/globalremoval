@@ -1,0 +1,220 @@
+---
+title: "Paired comparisons Wilcoxon and t-Test"
+author: "indra deCastro"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+      toc: true
+      theme: united
+---
+      
+<style type="text/css">
+      .table {
+            width: 100%;
+      }
+</style>
+      
+```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
+options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+```
+
+## Import data
+```{r import, echo=T}
+raw <- read.table("data/all.csv", header=T, sep=";")
+```
+
+## Select variables to compare
+```{r, echo=F}
+foc.names <- c("abun", "rich", "even", # taxonomic
+               # paste0("BIO.", 1:19), # climatic
+               "rem.met1", "rem.met2", # removal
+               "altitud", # geographical
+               "land.history", "cow.dens", "anthelmintic", # manegement
+               "Fric.behav", "Feve.behav", "Fdis.behav", "RaoQ.behav", "mpd.behav", # functional for 9 relocationXsize categories
+               # "Fdiv.behav" cant be calculated if only categorical traits are used 
+               "Fric.morph", "Feve.morph", "Fdiv.morph", "Fdis.morph", "RaoQ.morph", "mpd.morph") # functional for morphological traits
+# foc <- raw[,foc.names]
+# dim(foc)
+```
+
+Variables of interest (`r length(foc.names)`):
+
+- taxonomic: abun, rich, even
+<!-- - climatic: `r paste0("BIO.", 1:19)`  -->
+- removal: rem.met1, rem.met2
+<!-- - geographical: lat, altitud -->
+- manegement: land.history, cow.dens, anthelmintic
+- functional for 9 relocationXsize categories: Fric.behav, Feve.behav, Fdis.behav, RaoQ.behav, mpd.behav  
+(*Fdiv.behav cant be calculated if only categorical traits are used*)
+- functional for morphological traits: Fric.morph, Feve.morph, Fdiv.morph, Fdis.morph, RaoQ.morph, mpd.morph
+
+<!-- Names of environmental variables:   -->
+
+<!-- - BIO1 = Annual Mean Temperature -->
+<!-- - BIO2 = Mean Diurnal Range (Mean of monthly (max temp - min temp)) -->
+<!-- - BIO3 = Isothermality (BIO2/BIO7) (* 100) -->
+<!-- - BIO4 = Temperature Seasonality (standard deviation *100) -->
+<!-- - BIO5 = Max Temperature of Warmest Month -->
+<!-- - BIO6 = Min Temperature of Coldest Month -->
+<!-- - BIO7 = Temperature Annual Range (BIO5--BIO6) -->
+<!-- - BIO8 = Mean Temperature of Wettest Quarter -->
+<!-- - BIO9 = Mean Temperature of Driest Quarter -->
+<!-- - BIO10 = Mean Temperature of Warmest Quarter -->
+<!-- - BIO11 = Mean Temperature of Coldest Quarter -->
+<!-- - BIO12 = Annual Precipitation -->
+<!-- - BIO13 = Precipitation of Wettest Month -->
+<!-- - BIO14 = Precipitation of Driest Month -->
+<!-- - BIO15 = Precipitation Seasonality (Coefficient of Variation) -->
+<!-- - BIO16 = Precipitation of Wettest Quarter -->
+<!-- - BIO17 = Precipitation of Driest Quarter -->
+<!-- - BIO18 = Precipitation of Warmest Quarter -->
+<!-- - BIO19 = Precipitation of Coldest Quarter -->
+
+## Calculate paired Wilcoxon test
+```{r}
+# Example for one variable with NA
+# tmp <- raw[,c("site", "manejo", "even")]
+# tmp <- tmp[complete.cases(tmp),]
+# tmp <- raw[rep(table(tmp$site)==2, each=2),c("manejo", "even")]
+# with(tmp, wilcox.test(even~manejo, paired=T, exact=F, na.action=)$p.value)
+
+all.wilcox <- sapply(foc.names, function(var){
+      tmp <- complete.cases(raw[,c("manejo", var)])
+      tmp <- raw[,c("site", "manejo", var)]
+      tmp <- tmp[complete.cases(tmp),]
+      tmp <- raw[rep(table(tmp$site)==2, each=2),c("manejo", var)]
+      wilcox.test(tmp[,var] ~ tmp$manejo, paired=T, exact=F)$p.value})
+
+all.wilcox <- data.frame("site"=names(all.wilcox), "pval"=all.wilcox, row.names=NULL)
+library(dplyr)
+# ord.all.wilcox <- arrange(all.wilcox, pval)
+```
+
+
+```{r, eval=F}
+library(DT)
+datatable(ord.all.wilcox, width=35, options = list(pageLength = nrow(ord.all.wilcox), dom="t")) %>%
+      formatRound(columns=c("pval"), digits=4)
+```
+
+## Calculate paired t-Test
+```{r}
+# Example for one variable with NA
+# tmp <- raw[,c("site", "manejo", "even")]
+# tmp <- tmp[complete.cases(tmp),]
+# tmp <- raw[rep(table(tmp$site)==2, each=2),c("manejo", "even")]
+# with(tmp, wilcox.test(even~manejo, paired=T, exact=F, na.action=)$p.value)
+
+all.ttest <- sapply(foc.names, function(var){
+      tmp <- complete.cases(raw[,c("manejo", var)])
+      tmp <- raw[,c("site", "manejo", var)]
+      tmp <- tmp[complete.cases(tmp),]
+      tmp <- raw[rep(table(tmp$site)==2, each=2),c("manejo", var)]
+      t.test(tmp[,var] ~ tmp$manejo, paired=T, exact=F)$p.value})
+
+all.ttest <- data.frame("site"=names(all.ttest), "pval"=all.ttest, row.names=NULL)
+library(dplyr)
+# ord.all.ttest <- arrange(all.ttest, pval)
+```
+
+```{r}
+library(DT)
+both <- merge(all.wilcox, all.ttest, by="site", suffixes=c(".wilcox", ".ttest"))
+names(both) <- c("variable", "pval.wilcox", "pval.ttest")
+
+datatable(arrange(both, pval.wilcox), width=35, options = list(pageLength = nrow(all.ttest), dom="t")) %>%
+      formatRound(columns=c("pval.wilcox", "pval.ttest"), digits=4)
+```
+
+## Paired plots
+```{r, eval=F}
+numvars <- 1:length(foc.names)
+long <- melt(raw[c("manejo", foc.names[numvars])])
+long <- arrange(long, variable)
+both <- arrange(both, variable)
+
+mylabs <- levels(long$variable)
+levels(long$variable) <- paste0(mylabs[numvars],
+                               " (w=", round(both$pval.wilcox[numvars], 2),
+                               ", t=", round(both$pval.ttest[numvars], 2), ")")
+
+ggplot(long, aes_(x=~manejo, y=~value)) +
+      # geom_boxplot() +
+      geom_violin() +
+      # geom_line(aes(group = manejo)) + 
+      facet_wrap(~variable, scales="free") +
+      geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5) +
+      # geom_point() +
+      labs(x="", y="", title="")
+
+```
+
+
+
+```{r pairedplot, eval=T}
+library(reshape2)
+library(PairedData)
+
+plot.paired <- function(var) {
+  tmp <- raw[,c("site", "manejo", var)]
+  # although normally dcast is used to summarize df, here I use it as reshape to wide format
+  exvar <- dcast(tmp, site ~ manejo)
+  pd <- with(log10(exvar[,c("Int", "Ext")]), paired(Ext, Int))
+  plot(pd, type = "profile") +
+        labs(x="", y=var, title=toupper(var))
+        # + theme_bw()
+}
+
+par(mfrow=c(4,5), new=T)
+lapply(foc.names, plot.paired)
+```
+
+
+```{r, eval=F}
+long <- melt(raw[2:6])
+exvar <- reshape(long, direction="wide", timevar="manejo", idvar=c("site", "variable"), v.names="value")
+names(exvar) <- c("site", "var", "Ext", "Int")
+exvar <- exvar[complete.cases(exvar),]
+
+with(exvar, plot(paired(Ext, Int), groups=var))
+
+library(ggpubr)
+ggpaired(exvar, cond1=exvar$Ext, cond2=exvar$Int, facet.by="var", fill = "condition", palette = "jco")
+
+before <-c(200.1, 190.9, 192.7, 213, 241.4, 19.69, 172.2, 185.5, 205.2, 193.7)
+after <-c(392.9, 393.2, 345.1, 393, 434, 42.79, 422, 383.9, 392.3, 352.2)
+groups <- rep(letters[1:5], 2)
+
+d <- data.frame("before" = before, "after" = after, "groups" = groups)
+# ggpaired(d, cond1 = "before", cond2 = "after", fill = "condition", palette = "jco")
+ggpaired(d, cond1 = "before", cond2 = "after",
+    fill = "condition", palette = "jco", facet.by="groups")
+
+```
+
+
+
+
+```{r, eval=F}
+library(ggplot2)
+# library(ggsignif)
+
+white.violins <- raw[,c("manejo", "abun")] %>% 
+      ggplot() +
+      aes(x=manejo, y=log10(abun)) +
+      geom_violin() +
+      # geom_boxplot() + 
+      # facet_wrap(~ID, ncol=6) +
+      labs(x="manejo", y="Beetle abundance by site", title="PAIRED comparison") +
+      # scale_y_continuous(expand = c(0,0), limits=c(0,7.5)) +
+      # geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=F, test="wilcox.test", test.args=list(exact=F, paired=T))
+
+white.violins + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+```
+
+
+
+
