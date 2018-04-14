@@ -1,9 +1,38 @@
-[Paired tests](https://indradecastro.github.io/globalremoval/docs/paired.tests.html)
+<!-- 
+reps <- gsub("docs/", "", Sys.glob("docs/*"))
+repnames <- gsub("\\.", " ", gsub(".html", "", reps))
+repnames <- gsub("([[:alpha:]])([[:alpha:]]+)", "\\U\\1\\L\\2", repnames, perl=TRUE)
+gitlinks <- paste0("[", repnames, "](https://indradecastro.github.io/globalremoval/docs/", reps, ")")
+cat(gitlinks, sep="\n")
+-->
+
+## Reports
+#### Taxonomic and Functional indices:  
+- [Abundance](https://indradecastro.github.io/globalremoval/docs/abundance.html)
+- [Richness](https://indradecastro.github.io/globalremoval/docs/richness.html)
+- [Evenness](https://indradecastro.github.io/globalremoval/docs/evenness.html)
+- [Plot Mpd](https://indradecastro.github.io/globalremoval/docs/plot.mpd.html)
+
+#### Data about the sampling locations:  
+- [Clean Sites](https://indradecastro.github.io/globalremoval/docs/clean.sites.html)
+- [Complete Sites](https://indradecastro.github.io/globalremoval/docs/complete.sites.html)
+
+#### Exploring removal data and Calculating removal:  
+- [Clean Removal](https://indradecastro.github.io/globalremoval/docs/clean.removal.html)
+- [Removal Methods](https://indradecastro.github.io/globalremoval/docs/removal.methods.html)
+
+#### Statistical Tests:  
+- [Correlations](https://indradecastro.github.io/globalremoval/docs/correlations.html)
+- [Correlations 38Points](https://indradecastro.github.io/globalremoval/docs/correlations.38points.html)
+- [Table Wilcoxon Paired Test](https://indradecastro.github.io/globalremoval/docs/table.wilcoxon.paired.test.html)
 
 
-*the content of this document was written long time ago. It should be reviewed and updated*
+---
 
-## EXPERIMENTAL MEASUREMENT OF DUNG REMOVAL RATE ON A WORLDWIDE SCALE
+## Project description
+*The content of the text below was written long time ago. It should be reviewed and updated*  
+
+#### Experimental measurement of Dung Removal rate on a worldwide scale
 
 Dung beetles are key components for the functioning of many ecosystems, as they
 are involved in several ecosystem services due to their roll in dung removal. Dung
