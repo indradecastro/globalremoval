@@ -2,7 +2,10 @@
 title: "Clean 'Removal' data"
 author: "indra deCastro"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: html_document
+output:
+  html_document:
+    toc: true
+    theme: united
 ---
 
 <style type="text/css">
@@ -223,16 +226,16 @@ xp$ID <- strtrim(xp$codigo_parcela, width=5)
 
 
 ## METHOD 2
-*dry.rem48 = (initial_dung_dry – final_dung_dry) / 48h*
-*initial_dung_dry =  initial_dung_wet \* (1 – water_proportion)*
-*water_proportion = final_dung_wet – final_dung_dry*
-```{r}
+*dry.rem48 = (initial_dung_dry – final_dung_dry) / 48h*  
+*initial_dung_dry =  initial_dung_wet \* (1 – water_proportion)*  
+*water_proportion = (final_dung_wet – final_dung_dry) / final_dung_wet*
+```{r, eval=F}
 met2 <- raw[,c("codigo_parcela", "manejo", "unidad", "initial_dung", "final_dung_wet", "final_dung_dry")]
 ```
 
 
 ## Export data
-```{r}
+```{r, eval=F}
 rem.site <- ddply(xp, .(codigo_parcela, ID, manejo), summarise,
                   "avg.wet.rem48" = mean(rem48),
                   "std.wet.rem48" = sd(rem48))
@@ -247,7 +250,7 @@ head(all)
 
 
 
-## Removal according to treatment
+## Removal METHOD 1 according to treatment
 ```{r removal.plot, fig.height=20, fig.width=15}
 # usexp <- xp[which(xp$rem48>0),]
 usexp <- xp
@@ -256,11 +259,14 @@ usexp <- xp
 # significance
 usexp.pval <- ddply(usexp, .(ID), summarize,
                     "pval"=wilcox.test(rem48 ~ manejo, exact=F)$p.value)
-# arrange(usexp.pval, pval)[17:21,]
+# arrange(usexp.pval, pval)
                     
 usexp <- merge(usexp, usexp.pval)
 usexp <- arrange(usexp, pval)
-usexp$ID <- factor(usexp$ID, levels=unique(usexp$ID))
+
+sig.countries <- c("WAL03", "IRA01", "SPA01", "SPA02", "WAL02", "MEX03", "ITA01", "MEX05", "MEX04", "COL03", "CHI01", "POR01", "FRA01", "ARG01")
+my.ord <- c(sig.countries, setdiff(unique(usexp$ID), sig.countries))
+usexp$ID <- factor(usexp$ID, levels=my.ord, ordered=T)
 
 # plotting
 library(ggplot2)
@@ -268,7 +274,7 @@ library(ggsignif)
 
 white.violins <- usexp %>% 
       ggplot() +
-      aes(x=manejo, y=rem48) +
+      aes(x=manejo, y=rem48, fill=manejo) +
       geom_violin() +
       # geom_boxplot() + 
       facet_wrap(~ID, ncol=6) +
@@ -277,11 +283,53 @@ white.violins <- usexp %>%
       geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=T, test="wilcox.test", test.args=list(exact=F))
 
 white.violins
-arrange(usexp.pval, pval)
+# arrange(usexp.pval, pval)
 ```
 Note that the removal rate calculated in 48h is ONLY different (two-sided unpaired wilcoxon test) **`r nrow(usexp.pval[which(usexp.pval$pval<0.05),])`/`r nrow(usexp.pval)`** **(`r round(100*nrow(usexp.pval[which(usexp.pval$pval<0.05),])/nrow(usexp.pval),2)`%)** between Intensive and Extensive treatments.  
 **Is this reasonable??**  
 If no other statistical tool provides differences, it is useless searching environmental explanatory variables for such *homogeneous response variable*.
+
+
+```{r, eval=F}
+usexp <- xp
+
+
+# significance
+usexp.pval <- ddply(usexp, .(ID), summarize,
+                    "pval"=wilcox.test(rem48 ~ manejo, exact=F)$p.value)
+arrange(usexp.pval, pval)
+                    
+usexp <- merge(usexp, usexp.pval)
+usexp <- arrange(usexp, pval)
+
+sig.countries <- c("WAL03", "IRA01", "SPA01", "SPA02", "WAL02", "MEX03", "ITA01", "MEX05", "MEX04", "COL03", "CHI01", "POR01", "FRA01", "ARG01")
+my.ord <- c(sig.countries, setdiff(unique(usexp$ID), sig.countries))
+usexp$ID <- factor(usexp$ID, levels=my.ord, ordered=T)
+
+# my try
+mywx <- function(x,y){
+      tmp <- wilcox.test(x, y, exact=F, paired=F)
+      tmp$p.value <- p.adjust(tmp$p.value, n = 2, method = "BH")
+      tmp
+}  
+
+# plotting
+library(ggplot2)
+library(ggsignif)
+
+white.violins <- usexp %>% 
+      ggplot() +
+      aes(x=manejo, y=rem48, fill=manejo) +
+      geom_violin() +
+      # geom_boxplot() + 
+      facet_wrap(~ID, ncol=6) +
+      labs(x="manejo", y="Removal rate 48h (gr/h)", title="Dung Removal in each treatment") +
+      scale_y_continuous(expand = c(0,0), limits=c(0,7.5)) +
+      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=T, test="mywx")
+
+white.violins
+
+```
 
 
 <!-- ## Paired Wilcoxon test -->

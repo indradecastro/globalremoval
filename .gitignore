@@ -5,4 +5,6 @@
 .Ruserdata
 data/
 text/
-analysis/clean*/
+analysis/*_cache/
+analysis/*_files/
+

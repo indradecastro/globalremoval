@@ -23,7 +23,7 @@ options(markdown.HTML.header = system.file("misc", "datatables.html", package = 
 
 ## Import data
 ```{r import, echo=T}
-raw <- read.table("data/clean.removal.csv", header=T, sep=";", na.strings=c("-", "N/A", "NA"))
+raw <- read.table("data/clean.removal.csv", header=T, sep="\t", na.strings=c("-", "N/A", "NA"))
 ```
 
 ## METHOD 1
@@ -70,6 +70,7 @@ write.table(xp, "data/unit.removal.csv", row.names=F, quote=F, sep=";")
 ## Calculate Removal by Dung Beetle and Other Organism
 ```{r, echo=T}
 xp$unit <- as.factor(xp$unit)
+
 rem.site <- ddply(xp, .(site, manejo, type), numcolwise(mean, na.rm=T))
 
 all <- rem.site[rem.site$type=="Exp",]
@@ -86,17 +87,15 @@ all.rem <- all.rem[,c("code", "site", "manejo", "wet.rem48.all", "wet.rem48.nonB
 all.rem$dry.rem48.DungBeetles <- with(all.rem, dry.rem48.all - dry.rem48.nonBeetle)
 ```
 
-## METHOD 3
-(combination of METHOD 1 & 2)  
+<!-- ## METHOD 3 -->
+<!-- (combination of METHOD 1 & 2)   -->
 
-- dry2.rem48 = (initial_dung_wet - final_dung_wet - total_nonbeetle_loss) / 48h
-- total_nonbeetle_loss = initial_dung_wet – final_dung_dry **(using only CONROL units)**
+<!-- - dry2.rem48 = (initial_dung_wet - final_dung_wet - total_nonbeetle_loss) / 48h -->
+<!-- - total_nonbeetle_loss = initial_dung_wet – final_dung_dry **(using only CONROL units)** -->
 
 ```{r}
 
 ```
-
-
 
 
 ## Export results at site level
@@ -104,3 +103,118 @@ all.rem$dry.rem48.DungBeetles <- with(all.rem, dry.rem48.all - dry.rem48.nonBeet
 all.rem$wet.rem48.Evap.Orgs <- round(as.numeric(format(all.rem$wet.rem48.Evap.Orgs, scientific = FALSE)), 4)
 write.table(all.rem, "data/site.removal.csv", row.names=F, quote=F, sep=";")
 ```
+
+
+
+
+
+```{r}
+xp$unit <- as.factor(xp$unit)
+
+all <- xp[xp$type=="Exp",]
+org <- xp[xp$type=="Cont",]
+org.avg <- ddply(org, .(site, manejo, type), numcolwise(mean, na.rm=T))
+
+intvars <- c("site", "manejo", "wet.rem48", "dry.rem48")
+all.rem <- merge(all[,intvars], org.avg[,intvars], by=c("site", "manejo"), suffixes=c(".all", ".nonBeetle"))
+names(all.rem)[1] <- "code"
+all.rem$site <- substr(all.rem$code, 1, 5)
+all.rem <- all.rem[,c("code", "site", "manejo", "wet.rem48.all", "wet.rem48.nonBeetle", "dry.rem48.all", "dry.rem48.nonBeetle")]
+
+all.rem$dry.rem48.DungBeetles <- with(all.rem, dry.rem48.all - dry.rem48.nonBeetle)
+
+# rem.site <- ddply(xp, .(site, manejo, type), numcolwise(mean, na.rm=T))
+```
+
+## Plot Removal Method 1 (wet removal)
+```{r, eval=F, fig.height=20, fig.width=15}
+sig.countries <- c("WAL03", "IRA01", "SPA01", "SPA02", "WAL02", "MEX03", "COL03", "ITA01", "CHI01", "POR01", "MEX01", "MEX02", "MEX06", "SAL01", "MEX05", "MEX04", "FRA01", "AUS02", "BRA03", "CAN01")
+my.ord <- c(sig.countries, setdiff(unique(all.rem$site), sig.countries))
+all.rem$site <- factor(all.rem$site, levels=my.ord, ordered=T)
+
+library(dplyr)
+library(ggplot2)
+library(ggsignif)
+white.violins <- all.rem %>% 
+      ggplot() +
+      aes(x=manejo, y=wet.rem48.all, fill=manejo) +
+      geom_violin() +
+      # geom_boxplot() + 
+      facet_wrap(~site, ncol=6) +
+      labs(x="manejo", y="Removal method 1 (wet removal)", title="UNPAIRED comparison") +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      scale_y_continuous(expand = c(0,0), limits=c(-3,9)) +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=T, test="wilcox.test", test.args=list(exact=F, paired=F))
+
+white.violins + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+```
+
+<!-- ## Paired comparison -->
+```{r, eval=F}
+rem.site <- ddply(all.rem, .(code, manejo), numcolwise(mean, na.rm=T))
+
+library(dplyr)
+white.violins <- rem.site %>% 
+      ggplot() +
+      aes(x=manejo, y=wet.rem48.all, fill=manejo) +
+      geom_violin() +
+      # geom_boxplot() + 
+      # facet_wrap(~site, ncol=6) +
+      labs(x="manejo", y="Removal method 1 (wet removal)", title="PAIRED comparison") +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      scale_y_continuous(expand = c(0,0), limits=c(-3,7)) +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=T, test="wilcox.test", test.args=list(exact=F, paired=T))
+
+white.violins + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+```
+
+
+## Plot Removal Method 2 (dry removal)
+```{r, eval=F, fig.height=20, fig.width=15}
+sig.countries <- c("WAL03", "IRA01", "SPA01", "CHI01", "FRA01", "SAL01",
+                   "WAL02", "COL03", "POR01", "MEX01",  "MEX02",  "MEX06", "MEX04", "AUS02", "AUS01", "HUN01", "IND01",
+                   "MEX03", "ITA01", "MEX05", "BRA03", "CAN01", "SPA02", "BRA01", "COL01", "ECU01", "WAL01")
+my.ord <- c(sig.countries, setdiff(unique(all.rem$site), sig.countries))
+all.rem$site <- factor(all.rem$site, levels=my.ord, ordered=T)
+
+
+white.violins <- all.rem %>% 
+      ggplot() +
+      aes(x=manejo, y=dry.rem48.DungBeetles, fill=manejo) +
+      geom_violin() +
+      # geom_boxplot() + 
+      facet_wrap(~site, ncol=6) +
+      labs(x="manejo", y="Removal method 2 (dry removal)", title="UNPAIRED comparison") +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      scale_y_continuous(expand = c(0,0), limits=c(-1.5,5.5)) +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=T, test="wilcox.test", test.args=list(exact=F, paired=F))
+
+white.violins + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+```
+
+<!-- ## Paired comparison -->
+```{r}
+library(dplyr)
+library(ggplot2)
+library(ggsignif)
+
+rem.site <- ddply(all.rem, .(code, manejo), numcolwise(mean, na.rm=T))
+
+white.violins <- rem.site %>% 
+      ggplot() +
+      aes(x=manejo, y=dry.rem48.DungBeetles) +
+      geom_violin() +
+      # geom_boxplot() + 
+      # facet_wrap(~site, ncol=6) +
+      labs(x="manejo", y="Removal method 2 (dry removal)", title="PAIRED comparison") +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      scale_y_continuous(expand = c(0,0), limits=c(-1,4)) +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=F, test="wilcox.test", test.args=list(exact=F, paired=T))
+
+white.violins + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+```
+

@@ -1,0 +1,65 @@
+---
+title: "Removal methods"
+author: "indra deCastro"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+      
+<style type="text/css">
+      .table {
+            width: 40%;
+      }
+</style>
+      
+```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
+options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+```
+
+## Import data
+```{r import, echo=T}
+raw <- read.table("data/all.csv", header=T, sep=";", na.strings=c("-", "N/A", "NA"))
+```
+
+## MPD morphological PAIRED comparison
+```{r}
+library(dplyr)
+library(ggplot2)
+library(ggsignif)
+
+white.violins <- raw %>% 
+      ggplot() +
+      aes(x=manejo, y=mpd.morph) +
+      geom_violin() +
+      # geom_boxplot() + 
+      # facet_wrap(~site, ncol=6) +
+      labs(x="manejo", y="MPD morphological", title="") +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      scale_y_continuous(expand = c(0,0), limits=c(0,1.25)) +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=F, test="wilcox.test", test.args=list(exact=F, paired=T))
+
+white.violins + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+```
+
+## MPD behavioural PAIRED comparison
+```{r}
+white.violins <- raw %>% 
+      ggplot() +
+      aes(x=manejo, y=mpd.behav) +
+      geom_violin() +
+      # geom_boxplot() + 
+      # facet_wrap(~site, ncol=6) +
+      labs(x="manejo", y="MPD behavioural", title="") +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      scale_y_continuous(expand = c(0,0), limits=c(0,1.25)) +
+# WARNING: setting ylim in ggplot returns an error when data is beyond those limits
+      geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=F, test="wilcox.test", test.args=list(exact=F, paired=T))
+
+white.violins + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+```

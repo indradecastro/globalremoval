@@ -1,0 +1,155 @@
+---
+title: "Correlations with differences of biotic variables and means of abiotic variables"
+author: "indra deCastro"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+      
+<style type="text/css">
+      .table {
+            width: 100%;
+      }
+</style>
+      
+```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
+options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+```
+
+## Import data
+```{r import, echo=T}
+raw <- read.table("data/all.csv", header=T, sep=";")
+```
+
+## Calculate differences for biotic variables
+```{r}
+bio.vars <- c("abun", "rich", "even", # taxonomic
+               "rem.met1", "rem.met2", # removal
+               "Fric.behav", "Feve.behav", "Fdis.behav", "RaoQ.behav", "mpd.behav", # functional for 9 relocationXsize categories
+               # "Fdiv.behav" cant be calculated if only categorical traits are used 
+               "Fric.morph", "Feve.morph", "Fdiv.morph", "Fdis.morph", "RaoQ.morph", "mpd.morph")
+
+library(reshape)
+long <- melt(raw[,c("site", bio.vars)], id.vars = c("site"))
+diff.bios <- as.data.frame.matrix(t(cast(variable ~ site, data = long, fun.aggregate = diff, na.rm=T)))
+diff.bios$site <- rownames(diff.bios)
+```
+
+## Calculate means for abiotic variables
+```{r}
+abio.vars <- c(paste0("BIO.", 1:19), # climatic
+               "lat", "altitud", # geographical
+               "land.history", "cow.dens", "anthelmintic") # manegement
+
+# library(reshape)
+long <- melt(raw[,c("site", abio.vars)], id.vars = c("site"))
+mean.abios <- as.data.frame.matrix(t(cast(variable ~ site, data = long, fun = mean, na.rm=T)))
+mean.abios$site <- rownames(mean.abios)
+```
+
+## Merge the two sets of variables (biotic and abiotic)
+```{r, echo=T}
+both <- merge(diff.bios, mean.abios, by="site")
+write.table(both, "data/all.38sites.csv", row.names=F, quote=F, sep=";")
+```
+
+```{r, echo=F}
+foc.names <- c("abun", "rich", "even", # taxonomic
+               paste0("BIO.", 1:19), # climatic
+               "rem.met1", "rem.met2", # removal
+               "lat", "altitud", # geographical
+               "land.history", "cow.dens", "anthelmintic", # manegement
+               "Fric.behav", "Feve.behav", "Fdis.behav", "RaoQ.behav", "mpd.behav", # functional for 9 relocationXsize categories
+               # "Fdiv.behav" cant be calculated if only categorical traits are used 
+               "Fric.morph", "Feve.morph", "Fdiv.morph", "Fdis.morph", "RaoQ.morph", "mpd.morph") # functional for morphological traits
+foc <- both[,foc.names]
+# dim(foc)
+```
+
+## Select variables to explore correlations
+Variables of interest (`r ncol(foc)`):
+
+- taxonomic: abun, rich, even
+- climatic: `r paste0("BIO.", 1:19)` 
+- removal: rem.met1, rem.met2
+- geographical: lat, altitud
+- manegement: land.history, cow.dens, anthelmintic
+- functional for 9 relocationXsize categories: Fric.behav, Feve.behav, Fdis.behav, RaoQ.behav, mpd.behav  
+(*Fdiv.behav cant be calculated if only categorical traits are used*)
+- functional for morphological traits: Fric.morph, Feve.morph, Fdiv.morph, Fdis.morph, RaoQ.morph, mpd.morph
+
+Names of environmental variables:  
+
+- BIO1 = Annual Mean Temperature
+- BIO2 = Mean Diurnal Range (Mean of monthly (max temp - min temp))
+- BIO3 = Isothermality (BIO2/BIO7) (* 100)
+- BIO4 = Temperature Seasonality (standard deviation *100)
+- BIO5 = Max Temperature of Warmest Month
+- BIO6 = Min Temperature of Coldest Month
+- BIO7 = Temperature Annual Range (BIO5--BIO6)
+- BIO8 = Mean Temperature of Wettest Quarter
+- BIO9 = Mean Temperature of Driest Quarter
+- BIO10 = Mean Temperature of Warmest Quarter
+- BIO11 = Mean Temperature of Coldest Quarter
+- BIO12 = Annual Precipitation
+- BIO13 = Precipitation of Wettest Month
+- BIO14 = Precipitation of Driest Month
+- BIO15 = Precipitation Seasonality (Coefficient of Variation)
+- BIO16 = Precipitation of Wettest Quarter
+- BIO17 = Precipitation of Driest Quarter
+- BIO18 = Precipitation of Warmest Quarter
+- BIO19 = Precipitation of Coldest Quarter
+
+## Calculate correlations
+```{r, echo=F}
+library(dplyr)
+library(reshape2)
+
+allcor <- as.matrix(cor(foc, use="pairwise.complete.obs"))
+allcor.melt <- arrange(melt(allcor), -abs(value))
+# allcor.melt <- melt(allcor)
+allcor.uni <- allcor.melt[seq(1,nrow(allcor.melt), 2),]
+```
+
+## Filter correlations
+```{r}
+filcor <- dplyr::filter(allcor.uni,
+              X1 != X2 & # identity corelations
+              paste0(substr(X1, 1,3), substr(X2, 1,3)) != "BIOBIO" &
+              paste0(substr(X1, 1,1), substr(X2, 1,1)) != "FF"
+              )
+```
+
+### Highest correlations
+Criteria:  
+
+- 0.5 as arbitrary threshold
+- correlation between climatic variables (both climatic)
+```{r}
+filcor0.5 <- dplyr::filter(filcor, 
+                           value > 0.5 |
+                           value < -0.5) # .5 is arbitrary
+
+library(DT)
+datatable(filcor0.5, rownames=F, options = list(pageLength = nrow(filcor0.5), dom="t"), width=35) %>% formatRound(columns=c("value"), digits=3)
+```
+
+### All correlations for removal
+*Correlation between removal and all other variables regardless of the low correlation value*
+```{r}
+removal.cor <- dplyr::filter(filcor,
+              substr(X1, 1,7) == "rem.met" |
+              substr(X2, 1,7) == "rem.met")
+rem.left <- removal.cor[grep("rem.met", removal.cor$X1),]
+rem.right <- removal.cor[grep("rem.met", removal.cor$X2),]
+rem.right <- with(rem.right, data.frame("X1"=X2, "X2"=X1, value))
+arr.rem.cor <- arrange(rbind(rem.left, rem.right), X1, X2)
+
+datatable(arr.rem.cor, rownames=F, width=75, , options = list(pageLength = nrow(arr.rem.cor), dom="t")) %>% formatRound(columns=c("value"), digits=3)
+```
+

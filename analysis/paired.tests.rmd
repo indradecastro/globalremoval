@@ -73,6 +73,12 @@ Variables of interest (`r length(foc.names)`):
 <!-- - BIO18 = Precipitation of Warmest Quarter -->
 <!-- - BIO19 = Precipitation of Coldest Quarter -->
 
+## Natural log +1 transform all the variables of interest
+```{r}
+raw[,foc.names] <- apply(raw[,foc.names], 2, function(x){log(x+1)})
+```
+
+
 ## Calculate paired Wilcoxon test
 ```{r}
 # Example for one variable with NA
@@ -82,6 +88,7 @@ Variables of interest (`r length(foc.names)`):
 # with(tmp, wilcox.test(even~manejo, paired=T, exact=F, na.action=)$p.value)
 
 all.wilcox <- sapply(foc.names, function(var){
+      
       tmp <- complete.cases(raw[,c("manejo", var)])
       tmp <- raw[,c("site", "manejo", var)]
       tmp <- tmp[complete.cases(tmp),]

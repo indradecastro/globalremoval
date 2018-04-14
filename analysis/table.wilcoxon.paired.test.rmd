@@ -1,0 +1,128 @@
+---
+title: "Paired comparisons Wilcoxon"
+author: "indra deCastro"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+      toc: true
+      theme: united
+---
+      
+<style type="text/css">
+      .table {
+            width: 100%;
+      }
+</style>
+      
+```{r setup, include=FALSE}
+# setwd("/home/indra/Documents/20160101.Noriega.exp.remocion/")
+knitr::opts_knit$set(root.dir ="/home/indra/Documents/20160101.Noriega.exp.remocion/", message=F, warning=F, verbose=F, comment=F)
+knitr::opts_chunk$set(message=F, warning=F, verbose=F, echo=F, autodep=T, cache=T, fig.width=10)
+options(markdown.HTML.header = system.file("misc", "datatables.html", package = "knitr"))
+```
+
+## Import data
+```{r import, echo=T}
+raw <- read.table("data/all.csv", header=T, sep=";")
+```
+
+## Select variables to compare
+```{r, echo=F}
+foc.names <- c("abun", "rich", "even",
+               "rem.met2", # removal
+               "altitud", # geographical
+               "land.history", "cow.dens", "anthelmintic", # manegement
+               "mpd.behav", "mpd.morph") 
+```
+
+Variables of interest (`r length(foc.names)`):
+
+- taxonomic: abun, rich, even
+- removal: rem.met2
+- manegement: land.history, cow.dens, anthelmintic
+- functional indices: mpd.behav, mpd.morph
+
+## Natural log +1 transform all the variables of interest
+```{r}
+log.raw <- raw
+log.raw[,foc.names] <- apply(log.raw[,foc.names], 2, function(x){log(x+1)})
+```
+
+## Calculate paired Wilcoxon test for 1 variable
+(ie. abundance) to check the  
+From the help-pages of `R`:  
+*if both x and y are given and paired is FALSE, a Wilcoxon rank sum test (equivalent to the Mann-Whitney test: see the Note) is carried out.*  
+**Thus, our analysis can be called Wilcoxon signed rank tests without any doubt.**
+```{r, echo=T}
+wilcox.test(log.raw$abun ~ log.raw$manejo, paired=T)
+```
+
+## Calculate paired Wilcoxon test for all variables
+**ALL mean and sd (=standard deviation) values are given in ln(x+1)**
+```{r}
+all.wilcox <- sapply(foc.names, function(var){
+      
+      tmp <- complete.cases(log.raw[,c("manejo", var)])
+      tmp <- log.raw[,c("site", "manejo", var)]
+      tmp <- tmp[complete.cases(tmp),]
+      tmp <- log.raw[rep(table(tmp$site)==2, each=2),c("manejo", var)]
+      mywil <- wilcox.test(tmp[,var] ~ tmp$manejo, paired=T)
+      summary.var <- list("mean.Int"=mean(tmp[tmp$manejo=="Int",var], na.rm=T),
+                          "sd.Int"=sd(tmp[tmp$manejo=="Int",var], na.rm=T),
+                          "mean.Ext"=mean(tmp[tmp$manejo=="Ext",var], na.rm=T),
+                          "sd.Ext"=sd(tmp[tmp$manejo=="Ext",var], na.rm=T),
+                          "V"=mywil$statistic, "pval"=round(mywil$p.value, 4))
+      return(summary.var)
+      })
+
+wiltab <- t(all.wilcox)
+wiltab <- data.frame("variable"=rownames(wiltab), wiltab, row.names=NULL)
+
+# library(dplyr)
+# ord.all.wilcox <- arrange(wiltab, pval)
+# ord.all.wilcox
+```
+
+
+```{r, eval=T}
+library(DT)
+datatable(wiltab, width=35, options = list(pageLength = nrow(wiltab), dom="t")) %>%
+      formatRound(columns=c("pval"), digits=4)
+```
+
+
+## Plots presenting raw values (unless log. is included in the name)
+```{r, eval=T}
+raw$log.abun <- log.raw$abun; raw$abun <- NULL
+raw$log.cow.dens <- log.raw$cow.dens; raw$cow.dens <- NULL
+
+foc.names <- c("log.abun", "rich", "even", "rem.met2", "altitud", "land.history", 
+               "log.cow.dens", "anthelmintic", "mpd.behav", "mpd.morph")
+
+
+
+
+numvars <- 1:length(foc.names)
+library(reshape2)
+long <- melt(raw[c("manejo", foc.names[numvars])])
+library(dplyr)
+long <- arrange(long, variable)
+# both <- arrange(both, variable)
+# 
+# mylabs <- levels(long$variable)
+# levels(long$variable) <- paste0(mylabs[numvars],
+#                                " (w=", round(both$pval.wilcox[numvars], 2),
+#                                ", t=", round(both$pval.ttest[numvars], 2), ")")
+
+library(ggplot2)
+ggplot(long, aes_(x=~manejo, y=~value)) +
+      # geom_boxplot() +
+      geom_violin() +
+      # geom_line(aes(group = manejo)) + 
+      facet_wrap(~variable, scales="free") +
+      geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5) +
+      # geom_point() +
+      labs(x="", y="", title="")
+
+```
+

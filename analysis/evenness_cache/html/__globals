@@ -1,7 +1,0 @@
-import	raw	read.table	T	F	c
-unnamed-chunk-1	etiq.cols	praw	raw	etiq
-unnamed-chunk-2	library	vegan	rich.site	specnumber	praw	raw	code	abun.site	aggregate	list	sum	rownames	Group.1	H.site	diversity	even.site	log	data.frame	names	substr	reshape2	even.treat	dcast	site	manejo	DT	plyr	dplyr	datatable	F	%>%	formatRound	c
-rich.sites	even.site	site	%in%	even.treat	complete.cases	wilcox.test	even	manejo	T	library	ggplot2	ggsignif	white.violins	%>%	ggplot	aes	geom_violin	labs	geom_signif	list	c	F	geom_dotplot
-pairedplot	library	PairedData	pd	with	even.treat	c	paired	Ext	Int	plot	theme_bw	labs
-unnamed-chunk-3	library	vegan	rich.trap	specnumber	praw	H.trap	as.vector	sapply	split	raw	code	diversity	even.trap	log	data.frame	substr
-unnamed-chunk-4	even.trap	na.omit	even	even.trap.pval	ddply	.	site	summarize	wilcox.test	manejo	F	p.value	ord.trap.pvals	arrange	pval	datatable	%>%	formatRound	c	merge	factor	unique	white.violins	ggplot	aes	theme	element_blank	geom_violin	facet_wrap	labs	scale_y_continuous	geom_signif	list	T	geom_dotplot
