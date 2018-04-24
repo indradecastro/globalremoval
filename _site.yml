@@ -1,0 +1,29 @@
+name: Indra.deCastro
+output_dir: '.'
+navbar:
+  title: Dung Removal in the World
+  type: inverse
+  left:
+  - text: Home page
+    icon: fa-home
+    href: index.html
+  - text: Reports
+    icon: fa-file-o
+    href: reports.html
+  - text: Protocol
+    icon: fa-file-pdf-o
+    href: Removal rate sampling protocol.pdf
+  right:
+  - text: ~
+    icon: fa-envelope-o
+    href: mailto:indra@mncn.csic.es
+  - text: ~
+    icon: fa-github
+    href: https://github.com/indradecastro/globalremoval
+output:
+  html_document:
+    theme: cosmo
+    highlight: textmate
+    lib_dir: site_libs
+    self_contained: no
+

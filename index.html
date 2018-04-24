@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>index.utf8</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Dung Removal in the World</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+    Main page
+  </a>
+</li>
+<li>
+  <a href="reports.html">
+    <span class="fa fa-file-o"></span>
+     
+    Reports
+  </a>
+</li>
+<li>
+  <a href="Removal rate sampling protocol.pdf">
+    <span class="fa fa-file-pdf-o"></span>
+     
+    Protocol
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="mailto:indra@mncn.csic.es">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/indradecastro/globalremoval">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<!-- 
+reps <- gsub("docs/", "", Sys.glob("docs/*"))
+repnames <- gsub("\\.", " ", gsub(".html", "", reps))
+repnames <- gsub("([[:alpha:]])([[:alpha:]]+)", "\\U\\1\\L\\2", repnames, perl=TRUE)
+gitlinks <- paste0("[", repnames, "](https://indradecastro.github.io/globalremoval/docs/", reps, ")")
+cat(gitlinks, sep="\n")
+-->
+<div id="project-description" class="section level2">
+<h2>Project description</h2>
+<p><em>The content of the text below was written long time ago. It should be reviewed and updated</em></p>
+<div id="experimental-measurement-of-dung-removal-rate-on-a-worldwide-scale" class="section level4">
+<h4>Experimental measurement of Dung Removal rate on a worldwide scale</h4>
+<p>Dung beetles are key components for the functioning of many ecosystems, as they are involved in several ecosystem services due to their roll in dung removal. Dung removal is a very important process for the functioning of ecosystems as it improves the nutrient cycling, bioturbation, seed dispersal, plant growth, and parasite regulation. It is usually assumed that functional diversity (i.e. the diversity of the organismal traits that influence ecosystem functioning) and certain traits are directly linked to ecosystem functioning. In this multi-site experiment we want to study the relationship between dung removal rates and the functional composition of dung beetle assemblages in different grasslands around the world. We expect that the composition of dung beetle assemblages, and in particular the composition in terms of functional groups based on dung processing behavior (dwellers, tunnellers and rollers vs. big, medium and small sizes), will be related to dung removal efficiency.</p>
+<p>Land use changes are one of the main agents of global change. The progressive intensification of human-related activities can negatively affect the diversity of local communities and of the ecosystem services they provide. In this project we will also consider different levels of land management, evaluating the effects of land use intensification on the diversity of dung beetle assemblages and on the rates of dung removal. We expect that grasslands with lower management intensity (less amount of cattle per area) will have a more complex assemblage structure, higher diversity and dung removal rates.</p>
+<p>The added value of working at this large scale is the inclusion of a wide range of climates, evolutionary histories and human impacts. This will also allow evaluating whether latitudinal changes will have an impact on this process and on dung beetle assemblage composition. We expect that dung beetle functional diversity, abundance, richness and biomass will show the typical latitudinal gradient, with higher diversity towards the tropics; such gradient should affect dung removal rates. Confounding factors like herbivores and habitat type, and dung pad size will be controlled for as much as possible, by using size- and volume-controlled dung pads of one herbivore species in a grassland environment.</p>
+<p>In summary, in this project, we propose a sampling protocol that will be used in a worldwide experiment with multiple sites in different biogeographical and climatic regions. Such protocol will allow evaluating the following research questions: * (i) Is there a relationship between dung removal and dung beetle assemblage structure?<br />
+* (ii) Does cattle management intensity affect dung removal?<br />
+* (iii) Are these patterns similar or different around the world?</p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
