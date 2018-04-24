@@ -1,3 +1,27 @@
-theme: jekyll-theme-architect
-title: Dung Removal in the World
-description: Experimental measurement of dung removal rate on a worlwide scale
+name: "Indra.deCastro"                                  
+output_dir: "."
+navbar:
+  title: "Dung Removal in the World"
+  description: Experimental measurement of dung removal rate on a worlwide scale                                
+  type: inverse
+  left:
+    - text: "Main page"
+      icon: fa-home
+      href: index.html
+    - text: "Interests"
+      icon: fa-user 
+      href: recursos.html
+    - text: "CV"
+      icon: fa-file-pdf-o
+      href: cv.Rmd
+  right:
+    - text: "Contact me"
+      icon: fa-envelope-o
+      href: mailto:indra@mncn.csic.es                     
+    - text: "GitHub"
+      icon: fa-github
+      href: https://github.com/indradecastro      
+output:
+  html_document:
+    theme: cosmo
+    highlight: textmate

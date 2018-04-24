@@ -172,13 +172,12 @@ white.violins + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
 
 
 ## Plot Removal Method 2 (dry removal)
-```{r, eval=F, fig.height=20, fig.width=15}
+```{r, eval=T, fig.height=20, fig.width=15}
 sig.countries <- c("WAL03", "IRA01", "SPA01", "CHI01", "FRA01", "SAL01",
                    "WAL02", "COL03", "POR01", "MEX01",  "MEX02",  "MEX06", "MEX04", "AUS02", "AUS01", "HUN01", "IND01",
                    "MEX03", "ITA01", "MEX05", "BRA03", "CAN01", "SPA02", "BRA01", "COL01", "ECU01", "WAL01")
 my.ord <- c(sig.countries, setdiff(unique(all.rem$site), sig.countries))
 all.rem$site <- factor(all.rem$site, levels=my.ord, ordered=T)
-
 
 white.violins <- all.rem %>% 
       ggplot() +
@@ -193,6 +192,17 @@ white.violins <- all.rem %>%
       geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=T, test="wilcox.test", test.args=list(exact=F, paired=F))
 
 white.violins + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
+```
+
+```{r, eval=T}
+all.rem.pval <- ddply(all.rem, .(site), summarize,
+                    "pval"=wilcox.test(dry.rem48.DungBeetles ~ manejo, exact=F, paired=F)$p.value,
+                    "W"=wilcox.test(dry.rem48.DungBeetles ~ manejo, exact=F, paired=F)$statistic)
+ord.rem.pval <- arrange(all.rem.pval, pval)
+
+library(DT)
+datatable(ord.rem.pval, width=35, options = list(pageLength = nrow(ord.rem.pval), dom="t")) %>%
+      formatRound(columns=c("pval"), digits=4)
 ```
 
 <!-- ## Paired comparison -->
