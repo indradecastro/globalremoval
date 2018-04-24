@@ -2,7 +2,6 @@ name: "Indra.deCastro"
 output_dir: "."
 navbar:
   title: "Dung Removal in the World"
-  description: Experimental measurement of dung removal rate on a worlwide scale                                
   type: inverse
   left:
     - text: "Main page"
