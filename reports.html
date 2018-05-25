@@ -182,21 +182,21 @@ $(document).ready(function () {
   <a href="index.html">
     <span class="fa fa-home"></span>
      
-    Main page
+    Home page
   </a>
 </li>
 <li>
   <a href="reports.html">
-    <span class="fa fa-user"></span>
+    <span class="fa fa-file-o"></span>
      
     Reports
   </a>
 </li>
 <li>
-  <a href="cv.Rmd">
+  <a href="Removal rate sampling protocol.pdf">
     <span class="fa fa-file-pdf-o"></span>
      
-    CV
+    Protocol
   </a>
 </li>
       </ul>
@@ -205,14 +205,12 @@ $(document).ready(function () {
   <a href="mailto:indra@mncn.csic.es">
     <span class="fa fa-envelope-o"></span>
      
-    Contact me
   </a>
 </li>
 <li>
-  <a href="https://github.com/indradecastro">
+  <a href="https://github.com/indradecastro/globalremoval">
     <span class="fa fa-github"></span>
      
-    GitHub
   </a>
 </li>
       </ul>
@@ -228,6 +226,13 @@ $(document).ready(function () {
 </div>
 
 
+<!-- 
+reps <- gsub("docs/", "", Sys.glob("docs/*"))
+repnames <- gsub("\\.", " ", gsub(".html", "", reps))
+repnames <- gsub("([[:alpha:]])([[:alpha:]]+)", "\\U\\1\\L\\2", repnames, perl=TRUE)
+gitlinks <- paste0("[", repnames, "](https://indradecastro.github.io/globalremoval/docs/", reps, ")")
+cat(gitlinks, sep="\n")
+-->
 <div id="reports" class="section level2">
 <h2>Reports</h2>
 <div id="taxonomic-and-functional-indices" class="section level4">

@@ -48,8 +48,8 @@ xp <- merge(raw, avg.evap.rain.orgs)
 xp$wet.rem48 <- with(xp, (initial_dung_wet - final_dung_wet - avg.evap.rain.orgs) / 48)
 ```
 
-## METHOD 2
-- dry.rem48 = (initial_dung_dry – final_dung_dry) / 48h
+## METHOD 2 (UPDATED!)
+- dry.rem48 = (initial_dung_dry – final_dung_dry)
 - initial_dung_dry =  initial_dung_wet * (1 – final_water_proportion)
 - final_water_proportion = (final_dung_wet – final_dung_dry) / final_dung_wet  
 
@@ -58,7 +58,7 @@ xp$wet.rem48 <- with(xp, (initial_dung_wet - final_dung_wet - avg.evap.rain.orgs
 # calculate water.proportion
 xp$final.water.prop <- with(xp, (final_dung_wet - final_dung_dry) / final_dung_wet)
 xp$initial_dung_dry <- with(xp, initial_dung_wet * (1 - final.water.prop)) # assumes that water proportion is the same at the end and beginning of experiment
-xp$dry.rem48 <- with(xp, (initial_dung_dry - final_dung_dry) / 48 )
+xp$dry.rem48 <- with(xp, (initial_dung_dry - final_dung_dry))
 ```
 
 ## Export results at experimental-unit level
@@ -172,6 +172,7 @@ white.violins + geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5)
 
 
 ## Plot Removal Method 2 (dry removal)
+### UPDATED!!
 ```{r, eval=T, fig.height=20, fig.width=15}
 sig.countries <- c("WAL03", "IRA01", "SPA01", "CHI01", "FRA01", "SAL01",
                    "WAL02", "COL03", "POR01", "MEX01",  "MEX02",  "MEX06", "MEX04", "AUS02", "AUS01", "HUN01", "IND01",
@@ -185,9 +186,9 @@ white.violins <- all.rem %>%
       geom_violin() +
       # geom_boxplot() + 
       facet_wrap(~site, ncol=6) +
-      labs(x="manejo", y="Removal method 2 (dry removal)", title="UNPAIRED comparison") +
+      labs(x="manejo", y="Removal method 2 (dry removal) in gr/48h", title="UNPAIRED comparison") +
 # WARNING: setting ylim in ggplot returns an error when data is beyond those limits
-      scale_y_continuous(expand = c(0,0), limits=c(-1.5,5.5)) +
+      scale_y_continuous(expand = c(0,0), limits=c(-70, 230)) +
 # WARNING: setting ylim in ggplot returns an error when data is beyond those limits
       geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=T, test="wilcox.test", test.args=list(exact=F, paired=F))
 
@@ -221,7 +222,7 @@ white.violins <- rem.site %>%
       # facet_wrap(~site, ncol=6) +
       labs(x="manejo", y="Removal method 2 (dry removal)", title="PAIRED comparison") +
 # WARNING: setting ylim in ggplot returns an error when data is beyond those limits
-      scale_y_continuous(expand = c(0,0), limits=c(-1,4)) +
+      scale_y_continuous(expand = c(0,0), limits=c(-70, 230)) +
 # WARNING: setting ylim in ggplot returns an error when data is beyond those limits
       geom_signif(comparisons = list(c("Int", "Ext")), map_signif_level=F, test="wilcox.test", test.args=list(exact=F, paired=T))
 

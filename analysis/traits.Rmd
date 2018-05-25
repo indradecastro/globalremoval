@@ -159,7 +159,14 @@ cbind(sp1[grep("03", sp1$code, invert=F),c(1,4,5,7,8)],
 "new"=ddply(sp1[grep("03", sp1$code, invert=T),], .(trait), summarise,
       "new" = rnorm(n=10, mean=1.5*quantile(value)[4], sd=2*sd(value)))[,2]
 )
+```
 
+
+```{r}
+sprel <- traits[,c("sp", "reloc")]
+library(dplyr)
+sprel <- arrange(unique(sprel), sp)
+barplot(table(sprel$reloc), ylab="Number of Species", ylim=c(0,200))
 ```
 
 

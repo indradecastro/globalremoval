@@ -1,5 +1,7 @@
 name: Indra.deCastro
 output_dir: '.'
+image:
+  background: bug.png
 navbar:
   title: Dung Removal in the World
   type: inverse
@@ -8,8 +10,20 @@ navbar:
     icon: fa-home
     href: index.html
   - text: Reports
-    icon: fa-file-o
+    icon: glyphicon-off
     href: reports.html
+    menu:
+    - text: Heading 1
+    - text: Page A
+      href: page_a.html
+    - text: Page B
+      href: page_b.html
+    - text: '---------'
+    - text: Heading 2
+    - text: Page C
+      href: page_c.html
+    - text: Page D
+      href: page_d.html
   - text: Protocol
     icon: fa-file-pdf-o
     href: Removal rate sampling protocol.pdf

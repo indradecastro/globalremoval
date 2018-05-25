@@ -182,15 +182,34 @@ $(document).ready(function () {
   <a href="index.html">
     <span class="fa fa-home"></span>
      
-    Main page
+    Home page
   </a>
 </li>
-<li>
-  <a href="reports.html">
-    <span class="fa fa-file-o"></span>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="glyphicon glyphicon-off"></span>
      
     Reports
+     
+    <span class="caret"></span>
   </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Heading 1</li>
+    <li>
+      <a href="page_a.html">Page A</a>
+    </li>
+    <li>
+      <a href="page_b.html">Page B</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Heading 2</li>
+    <li>
+      <a href="page_c.html">Page C</a>
+    </li>
+    <li>
+      <a href="page_d.html">Page D</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="Removal rate sampling protocol.pdf">
@@ -226,13 +245,6 @@ $(document).ready(function () {
 </div>
 
 
-<!-- 
-reps <- gsub("docs/", "", Sys.glob("docs/*"))
-repnames <- gsub("\\.", " ", gsub(".html", "", reps))
-repnames <- gsub("([[:alpha:]])([[:alpha:]]+)", "\\U\\1\\L\\2", repnames, perl=TRUE)
-gitlinks <- paste0("[", repnames, "](https://indradecastro.github.io/globalremoval/docs/", reps, ")")
-cat(gitlinks, sep="\n")
--->
 <div id="project-description" class="section level2">
 <h2>Project description</h2>
 <p><em>The content of the text below was written long time ago. It should be reviewed and updated</em></p>
